@@ -82,6 +82,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/mateusz/PW/projekt-C/mn418323/actor_system_test.c">
+			<Option target="test_q"/>
+		</Unit>
 		<Unit filename="/home/mateusz/PW/projekt-C/mn418323/cacti.c">
 			<Option target="test_q"/>
 		</Unit>

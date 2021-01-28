@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/test_q.dir/actor_system_test.c.o"
   "CMakeFiles/test_q.dir/cacti.c.o"
   "CMakeFiles/test_q.dir/main.c.o"
   "CMakeFiles/test_q.dir/queue.c.o"

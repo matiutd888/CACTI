@@ -143,6 +143,33 @@ test_q/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_q.dir/build.make CMakeFiles/test_q.dir/build
 .PHONY : test_q/fast
 
+actor_system_test.o: actor_system_test.c.o
+
+.PHONY : actor_system_test.o
+
+# target to build an object file
+actor_system_test.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_q.dir/build.make CMakeFiles/test_q.dir/actor_system_test.c.o
+.PHONY : actor_system_test.c.o
+
+actor_system_test.i: actor_system_test.c.i
+
+.PHONY : actor_system_test.i
+
+# target to preprocess a source file
+actor_system_test.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_q.dir/build.make CMakeFiles/test_q.dir/actor_system_test.c.i
+.PHONY : actor_system_test.c.i
+
+actor_system_test.s: actor_system_test.c.s
+
+.PHONY : actor_system_test.s
+
+# target to generate assembly for a file
+actor_system_test.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_q.dir/build.make CMakeFiles/test_q.dir/actor_system_test.c.s
+.PHONY : actor_system_test.c.s
+
 cacti.o: cacti.c.o
 
 .PHONY : cacti.o
@@ -233,6 +260,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... test_q"
+	@echo "... actor_system_test.o"
+	@echo "... actor_system_test.i"
+	@echo "... actor_system_test.s"
 	@echo "... cacti.o"
 	@echo "... cacti.i"
 	@echo "... cacti.s"

@@ -22,6 +22,7 @@ typedef struct actor_struct {
     queue_t *messages;
     pthread_mutex_t mutex;
     bool is_on_queue;
+    bool working;
     void *state;
 } actor_t;
 
@@ -42,6 +43,7 @@ actor_vec_t actors;
 pthread_mutex_t mutex;
 
 struct sigaction action;
+sigset_t block_mask;
 
 struct tpool {
     queue_t *q;
@@ -60,7 +62,9 @@ tpool_t *tm;
 
 //--------------------------------------------------------------
 
-static void dealloc_actors_v() {
+pthread_cond_t join_cond;
+
+static void destroy_system() {
     for (size_t i = 0; i < actors.count; i++) {
         queue_destruct(actors.vec[i]->messages);
 
@@ -93,21 +97,32 @@ void tpool_wait() {
         }
     }
     pthread_mutex_unlock(&(mutex));
+
 }
 
 void tpool_destroy() {
     if (tm == NULL)
         return;
 
-    queue_destruct(tm->q);
-
     pthread_cond_broadcast(&(tm->work_cond));
     pthread_mutex_unlock(&(mutex));
 
     tpool_wait(tm);
+
+    pthread_cond_broadcast(&(join_cond));
+
+    pthread_mutex_lock(&mutex);
+    pthread_mutex_unlock(&mutex);
+
+    pthread_cond_destroy(&join_cond);
+
+    pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&(tm->work_cond));
     pthread_cond_destroy(&(tm->working_cond));
 
+    destroy_system();
+    queue_destruct(tm->q);
+    actors.dead = true;
     free(tm);
 }
 
@@ -120,7 +135,9 @@ static void *tpool_worker() {
 
         if (queue_empty(tm->q) && (actors.count_dead == actors.count || actors.signaled)) {
             tm->stop = true; // TODO obsługa GODIE
+            tm->thread_cnt--;
             tpool_destroy(); // TODO dealloc actors;
+            return NULL;
         }
 
         while (queue_empty(tm->q) && !tm->stop)
@@ -147,12 +164,15 @@ static void *tpool_worker() {
     }
     tm->thread_cnt--;
     pthread_cond_signal(&(tm->working_cond));
-    if (tm->thread_cnt == 0) {
-        dealloc_actors_v();
-        actors.dead = true;
-    }// TODO czy to w dobrym miejscu
     pthread_mutex_unlock(&(mutex));
     return NULL;
+}
+
+void actor_system_join(actor_id_t actor) {
+    pthread_mutex_lock(&mutex);
+    while (!actors.dead) {
+        pthread_cond_wait(&join_cond, &mutex);
+    }
 }
 
 tpool_t *tpool_create(size_t num) {
@@ -219,7 +239,6 @@ void add_actor(actor_t *actor) {
 
     if (actors.count == actors.size)
         resize_actors();
-
     actors.count_dead = 0;
     actors.vec[actors.count] = actor;
     actors.count++;
@@ -242,7 +261,16 @@ actor_t *new_actor(role_t *role) {
     new_act->is_on_queue = false;
     new_act->role = *role;
     new_act->state = NULL;
+    new_act->working = false;
     return new_act;
+}
+
+void catch(int sig) {
+    if (sig != SIGINT)
+        syserr(0, "Błąd obsługi sygnałów");
+    pthread_mutex_lock(&mutex);
+    actors.signaled = true;
+    pthread_mutex_unlock(&mutex);
 }
 
 int actor_system_create(actor_id_t *actor, role_t *const role) {
@@ -251,11 +279,15 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
 
     if (pthread_mutex_init(&mutex, 0) != 0)
         return -1;
+    if (pthread_cond_init(&join_cond, NULL) != 0)
+        return -1;
 
+    pthread_mutex_lock(&mutex);
     actors.vec = calloc(INITIAL_ACTORS_SIZE, sizeof(actor_t *));
     actors.size = INITIAL_ACTORS_SIZE;
-    for (size_t i = 0; i < actors.size; i++)
+    for (size_t i = 0; i < actors.size; i++) {
         actors.vec[i] = NULL;
+    }
 
     actors.count = 0;
     actors.dead = false;
@@ -269,6 +301,15 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
 
     actor_t *act = new_actor(role);
     add_actor(act);
+
+
+    sigemptyset(&block_mask);
+    sigaddset(&block_mask, SIGINT);
+    action.sa_flags = 0;
+    action.sa_mask = block_mask;
+    action.sa_handler = catch;
+
+    pthread_mutex_unlock(&mutex);
     // TODO ogarnać
 }
 
@@ -293,6 +334,15 @@ void run_message(actor_t *actor, message_t *msg) {
         run_spawn(actor, msg);
         return;
     }
+    if (msg->message_type == MSG_GODIE) {
+        pthread_mutex_lock(&mutex);
+        pthread_mutex_lock(&(actor->mutex));
+        actor->is_dead = true;
+        actors.count_dead++;
+        pthread_mutex_unlock(&(actor->mutex));
+        pthread_mutex_unlock(&mutex);
+        return;
+    }
 
     actor->role.prompts[msg->message_type](&(actor->state), msg->nbytes, msg->data);
     // TODO czy message mogę zwolnić w tym miejscu
@@ -313,6 +363,8 @@ void tpool_execute_messages(actor_id_t id) {
         syserr(1, "Execute messages: nie udało się zaalokować mutexa!");
 
     actor->is_on_queue = false;
+    actor->working = true;
+
     queue_t *message_q = actor->messages;
     size_t messages_count = queue_size(message_q);
     if (pthread_mutex_unlock(&(actor->mutex)) != 0)
@@ -331,6 +383,17 @@ void tpool_execute_messages(actor_id_t id) {
         free_msg(msg);
         messages_count--;
     }
+
+    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&actor->mutex);
+    if (actor->is_on_queue) {
+        actor_id_t *work_id = malloc(sizeof(actor_id_t));
+        *work_id = id;
+        queue_push(tm->q, work_id);
+        tpool_add_notify();
+    }
+    pthread_mutex_unlock(&actor->mutex);
+    pthread_mutex_unlock(&mutex);
 }
 
 message_t *create_message(message_t message) {
@@ -357,30 +420,37 @@ int send_message(actor_id_t id, message_t message) {
     actor_t *act = actors.vec[id];
     pthread_mutex_lock(&(act->mutex));
 
-    if (act->is_dead)
+    if (act->is_dead) {
+        pthread_mutex_unlock(&(act->mutex));
+        pthread_mutex_unlock(&(mutex));
         return ACTOR_IS_DEAD;
-
-    if (queue_size(act->messages) == ACTOR_QUEUE_LIMIT)
-        return -3;
-    // TODO zdefiniować stałą.
-
-    if (message.message_type == MSG_GODIE) {
-        act->is_dead = true;
-        actors.count_dead++;
     }
+
+    if (queue_size(act->messages) == ACTOR_QUEUE_LIMIT) {
+        pthread_mutex_unlock(&(act->mutex));
+        pthread_mutex_unlock(&(mutex));
+        return -3;
+    }
+    // TODO zdefiniować stałą.
 
     if (act->role.nprompts <= message.message_type
         && message.message_type != MSG_GODIE
         && message.message_type != MSG_SPAWN) {
+        pthread_mutex_unlock(&(act->mutex));
+        pthread_mutex_unlock(&(mutex));
         return -4; // TODO zdefiniować stałą
     }
 
     message_t *m = create_message(message);
     queue_push(act->messages, m);
     if (!act->is_on_queue) {
-        work_id = malloc(sizeof(actor_id_t));
-        queue_push(tm->q, work_id);
-        tpool_add_notify();
+        act->is_on_queue = true;
+        if (!act->working) {
+            work_id = malloc(sizeof(actor_id_t));
+            *work_id = id;
+            queue_push(tm->q, work_id);
+            tpool_add_notify();
+        }
     }
 
     pthread_mutex_unlock(&(act->mutex));

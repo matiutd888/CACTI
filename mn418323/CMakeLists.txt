@@ -33,4 +33,4 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_compile_options(-g -Wall -Wextra -pthread)
 
-add_executable(test_q main.c queue.h queue.c cacti.c cacti.h)
+add_executable(test_q main.c queue.h queue.c cacti.c cacti.h actor_system_test.c)
