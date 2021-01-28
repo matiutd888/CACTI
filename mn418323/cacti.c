@@ -21,7 +21,7 @@ typedef struct actor_struct {
     bool is_dead;
     queue_t *messages;
     pthread_mutex_t mutex;
-    bool is_on_queue;
+    bool has_messages;
     bool working;
     void *state;
 } actor_t;
@@ -258,7 +258,7 @@ actor_t *new_actor(role_t *role) {
 
     new_act->actor_id = new_id;
     new_act->messages = queue_init(INITIAL_MESSAGES_QUEUE_SIZE);
-    new_act->is_on_queue = false;
+    new_act->has_messages = false;
     new_act->role = *role;
     new_act->state = NULL;
     new_act->working = false;
@@ -362,7 +362,7 @@ void tpool_execute_messages(actor_id_t id) {
     if (pthread_mutex_lock(&(actor->mutex)) != 0)
         syserr(1, "Execute messages: nie udało się zaalokować mutexa!");
 
-    actor->is_on_queue = false;
+    actor->has_messages = false;
     actor->working = true;
 
     queue_t *message_q = actor->messages;
@@ -386,12 +386,13 @@ void tpool_execute_messages(actor_id_t id) {
 
     pthread_mutex_lock(&mutex);
     pthread_mutex_lock(&actor->mutex);
-    if (actor->is_on_queue) {
+    if (actor->has_messages) {
         actor_id_t *work_id = malloc(sizeof(actor_id_t));
         *work_id = id;
         queue_push(tm->q, work_id);
         tpool_add_notify();
     }
+    actor->working = false;
     pthread_mutex_unlock(&actor->mutex);
     pthread_mutex_unlock(&mutex);
 }
@@ -443,8 +444,8 @@ int send_message(actor_id_t id, message_t message) {
 
     message_t *m = create_message(message);
     queue_push(act->messages, m);
-    if (!act->is_on_queue) {
-        act->is_on_queue = true;
+    if (!act->has_messages) {
+        act->has_messages = true;
         if (!act->working) {
             work_id = malloc(sizeof(actor_id_t));
             *work_id = id;
