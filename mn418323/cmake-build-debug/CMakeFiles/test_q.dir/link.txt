@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/test_q.dir/main.c.o CMakeFiles/test_q.dir/queue.c.o CMakeFiles/test_q.dir/cacti.c.o  -o test_q 
