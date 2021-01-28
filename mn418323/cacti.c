@@ -11,9 +11,13 @@
 #define INITIAL_MESSAGES_QUEUE_SIZE 1024
 #define ACTOR_SIZE sizeof(actor_t)
 
-#define NO_ACTOR_OF_ID -2
+#define NO_ACTOR_OF_ID (-2)
 
-#define ACTOR_IS_DEAD -1
+#define ACTOR_IS_DEAD (-1)
+
+void komunikat(char *s) {
+    printf("%d %s\n", pthread_self()%100, s);
+}
 
 typedef struct actor_struct {
     role_t role;
@@ -39,7 +43,16 @@ typedef struct actors_vec {
     bool signaled;
 } actor_vec_t;
 
-actor_vec_t actors;
+actor_t *dummy = NULL;
+
+actor_vec_t actors = {
+        .vec = &dummy,
+        .count = 0,
+        .count_dead = 0,
+        .size = 0,
+        .dead = true,
+        .signaled = false};
+
 pthread_mutex_t mutex;
 
 struct sigaction action;
@@ -70,10 +83,10 @@ static void destroy_system() {
 
         if (actors.vec[i]->state != NULL)
             free(actors.vec[i]->state);
-
         free(actors.vec[i]);
     }
     free(actors.vec);
+    actors.vec == NULL;
 }
 
 void tpool_execute_messages(actor_id_t id);
@@ -96,34 +109,44 @@ void tpool_wait() {
             break;
         }
     }
+    printf("Koniec czekania na koniec!\n");
     pthread_mutex_unlock(&(mutex));
 
 }
 
+
+
 void tpool_destroy() {
+    printf("%d: będę kończył program!\n", pthread_self() % 100);
     if (tm == NULL)
         return;
 
     pthread_cond_broadcast(&(tm->work_cond));
     pthread_mutex_unlock(&(mutex));
 
-    tpool_wait(tm);
+    tpool_wait();
 
+    actors.dead = true;
+
+    komunikat("elo 0");
     pthread_cond_broadcast(&(join_cond));
-
+    komunikat("elo 1");
     pthread_mutex_lock(&mutex);
     pthread_mutex_unlock(&mutex);
+    komunikat("elo 2");
 
     pthread_cond_destroy(&join_cond);
-
+    komunikat("elo 3");
     pthread_mutex_destroy(&mutex);
+    komunikat("elo 4");
     pthread_cond_destroy(&(tm->work_cond));
+    komunikat("5");
     pthread_cond_destroy(&(tm->working_cond));
-
+    komunikat("6");
     destroy_system();
     queue_destruct(tm->q);
-    actors.dead = true;
     free(tm);
+    printf("%d: Koniec kończącego procesu!\n", pthread_self() % 100);
 }
 
 // Executes work in the treadpool thats pointed by arg.
@@ -132,25 +155,31 @@ static void *tpool_worker() {
 
     while (1) {
         pthread_mutex_lock(&(mutex));
+        printf("%d: Actors count = %d, Actors dead == %d\n", pthread_self() % 100, actors.count, actors.count_dead);
 
-        if (queue_empty(tm->q) && (actors.count_dead == actors.count || actors.signaled)) {
-            tm->stop = true; // TODO obsługa GODIE
-            tm->thread_cnt--;
-            tpool_destroy(); // TODO dealloc actors;
-            return NULL;
-        }
 
-        while (queue_empty(tm->q) && !tm->stop)
+        while (queue_empty(tm->q) && !tm->stop) {
+            if (queue_empty(tm->q) && (actors.count_dead == actors.count || actors.signaled)) {
+                printf("%d: Zauważyłem, że to koniec!\n", pthread_self() % 100);
+                tm->stop = true; // TODO obsługa GODIE
+                tm->thread_cnt--;
+                tpool_destroy(); // TODO dealloc actors;
+                return NULL;
+            }
             pthread_cond_wait(&(tm->work_cond), &(mutex));
 
-        if (tm->stop)
+        }
+
+        if (tm->stop) {
             break;
+        }
 
         id = tpool_id_get();
         tm->working_cnt++;
         pthread_mutex_unlock(&(mutex));
 
         if (id != NULL) {
+            printf("%d: Mam jakąś pracę! aktorID = %d\n", pthread_self() % 100, *id);
             tpool_execute_messages(*id);
             free(id);
         }
@@ -165,6 +194,7 @@ static void *tpool_worker() {
     tm->thread_cnt--;
     pthread_cond_signal(&(tm->working_cond));
     pthread_mutex_unlock(&(mutex));
+    printf("%d: Koniec procesu %d\n", pthread_self() % 100, tm->thread_cnt);
     return NULL;
 }
 
@@ -173,17 +203,24 @@ void actor_system_join(actor_id_t actor) {
     while (!actors.dead) {
         pthread_cond_wait(&join_cond, &mutex);
     }
+    pthread_mutex_unlock(&mutex);
+    printf("%d: koniec czekania na wątki\n", pthread_self() % 100);
+}
+
+actor_id_t actor_id_self() {
+    return 0;
 }
 
 tpool_t *tpool_create(size_t num) {
     tpool_t *t;
-    pthread_t thread;
+
     size_t i;
 
     if (num == 0)
         num = 2;
+
     t = NULL;
-    t = calloc(1, sizeof(*t));
+    t = malloc(sizeof(tpool_t));
     if (t == NULL)
         return NULL;
 
@@ -199,6 +236,7 @@ tpool_t *tpool_create(size_t num) {
     t->q = queue_init(INITIAL_ACTORS_SIZE);
 
     for (i = 0; i < num; i++) {
+        pthread_t thread;
         if (pthread_create(&thread, NULL, tpool_worker, t) != 0)
             exit(1);
         pthread_detach(thread);
@@ -208,6 +246,7 @@ tpool_t *tpool_create(size_t num) {
 }
 
 bool tpool_add_notify() {
+    printf("Budzę kogoś, q.size() %d\n", queue_size(tm->q));
     if (tm == NULL)
         return false;
     pthread_cond_broadcast(&(tm->work_cond));
@@ -225,11 +264,6 @@ void resize_actors() {
     for (size_t i = actors.count; i < actors.size; i++)
         actors.vec = NULL;
 }
-
-
-// Weź id aktora z kolejki aktorow
-// wywolaj tpool_execute_messages(actor_id_q.pop())
-static void *process_main_queue();
 
 void add_actor(actor_t *actor) {
     if (actors.count == CAST_LIMIT) {
@@ -274,7 +308,7 @@ void catch(int sig) {
 }
 
 int actor_system_create(actor_id_t *actor, role_t *const role) {
-    if (!actors.dead)
+    if (!actors.dead || actors.vec == NULL)
         return -1;
 
     if (pthread_mutex_init(&mutex, 0) != 0)
@@ -302,6 +336,7 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
     actor_t *act = new_actor(role);
     add_actor(act);
 
+    *actor = act->actor_id;
 
     sigemptyset(&block_mask);
     sigaddset(&block_mask, SIGINT);
@@ -311,6 +346,7 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
 
     pthread_mutex_unlock(&mutex);
     // TODO ogarnać
+    return 0;
 }
 
 void run_spawn(actor_t *actor, message_t *msg) {
@@ -354,7 +390,7 @@ void free_msg(message_t *msg) {
 }
 
 void tpool_execute_messages(actor_id_t id) {
-    if (id >= actors.count)
+    if (actors.count <= id)
         syserr(1, "Execute messages: wrong actor id\n");
     actor_t *actor = actors.vec[id];
 
@@ -367,6 +403,7 @@ void tpool_execute_messages(actor_id_t id) {
 
     queue_t *message_q = actor->messages;
     size_t messages_count = queue_size(message_q);
+    printf("%d: Aktor %d ma %d wiadomości\n", pthread_self() % 100, actor->actor_id, messages_count);
     if (pthread_mutex_unlock(&(actor->mutex)) != 0)
         syserr(1, "Execute messages: nie udało się zwolnić mutexa!");
 
@@ -379,6 +416,7 @@ void tpool_execute_messages(actor_id_t id) {
         //Zwolnienie mutexa
         if (pthread_mutex_unlock(&(actor->mutex)) != 0)
             syserr(1, "Nie udało się zwolnić mute!xa");
+        printf("%d: Obsługuję wiadomość %d\n", pthread_self() % 100, msg->message_type);
         run_message(actor, msg);
         free_msg(msg);
         messages_count--;
@@ -393,6 +431,7 @@ void tpool_execute_messages(actor_id_t id) {
         tpool_add_notify();
     }
     actor->working = false;
+    printf("%d: Skończyłem! actor %d ma %d wiadomości\n", pthread_self() % 100, actor->actor_id, queue_size(actor->messages));
     pthread_mutex_unlock(&actor->mutex);
     pthread_mutex_unlock(&mutex);
 }
@@ -444,6 +483,7 @@ int send_message(actor_id_t id, message_t message) {
 
     message_t *m = create_message(message);
     queue_push(act->messages, m);
+    printf("%d: Dodaję message %d do aktora %d\n",pthread_self() % 100,  m->message_type, act->actor_id);
     if (!act->has_messages) {
         act->has_messages = true;
         if (!act->working) {

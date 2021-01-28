@@ -3,15 +3,15 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "cacti.h"
+#include "../cacti.h"
 
 #define NO_INCREMENTS 1000
 
 int x=1;
-
+int counter = 1;
 void hello(void** stateptr, size_t size, void* data){
     assert(*stateptr == NULL);
-    printf("hello, i am %ld, and my father is %ld\n", actor_id_self(), (actor_id_t)data);
+    printf("hello, i am %ld, and my father is %ld\n", counter++, (actor_id_t)data);
     message_t msg = {
             .data = &x,
             .message_type = 1
@@ -28,7 +28,7 @@ void hello(void** stateptr, size_t size, void* data){
     send_message(actor_id_self(),gdmsg);
 }
 
-void fun(void** stateptr, size_t size, void* data){
+void fun(void** stateptr, size_t size, void* data) {
     printf("%ld is incrementing data: %d\n", actor_id_self(), ++*(int*)data);
     message_t gdmsg = {
             .message_type = MSG_GODIE

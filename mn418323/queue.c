@@ -19,17 +19,6 @@ struct m_queue {
     size_t count;
 };
 
-bool init_array_1D(void **data_ptr, size_t type, size_t len) {
-    void *data = NULL;
-    data = calloc(len, type);
-    if (data == NULL)
-        return false;
-    *data_ptr = data;
-    for (size_t l = 0; l < len; l++)
-        data_ptr[l] = NULL;
-    return true;
-}
-
 queue_t *queue_init(size_t size) {
     queue_t *q = NULL;
     q = malloc(sizeof(queue_t));
