@@ -62,6 +62,6 @@ int main() {
     send_message(actorId, godie);
     actor_system_join(0);
 
-    sleep(5);
+    // sleep(5);
     free(prompts);
 }

@@ -31,7 +31,8 @@ queue_t *queue_init(size_t size) {
         return NULL;
     }
     q->size = size;
-    q->write = q->read = 0;
+    q->write = 0;
+    q->read = 0;
     q->count = 0;
     return q;
 }
