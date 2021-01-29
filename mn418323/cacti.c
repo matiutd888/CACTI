@@ -177,14 +177,13 @@ void tpool_destroy() {
     destroy_system();
     queue_destruct(tm->q);
     free(tm);
-
+    printf("%d: Destroying\n", pthread_self() % 100);
+    pthread_mutex_destroy(&mutex);
     if (joined) {
 //        printf("Budzę wątek główny!\n");
         cond_broadcast(&(join_cond));
     }
     if (debug) printf("%d: Koniec kończącego procesu!\n", pthread_self() % 100);
-    printf("%d: Destroying\n", pthread_self() % 100);
-    pthread_mutex_destroy(&mutex);
 }
 
 void actor_system_join(actor_id_t actor) {
@@ -204,11 +203,12 @@ void actor_system_join(actor_id_t actor) {
     while (!actors.dead) {
         cond_wait(&join_cond, &join_mutex);
     }
-    unlock_mutex(&join_mutex);
-    pthread_cond_destroy(&join_mutex);
     printf("%d: join, mutex unlock 1\n", pthread_self() % 100);
     pthread_cond_destroy(&join_cond);
     komunikat("koniec czekania na wątki");
+    unlock_mutex(&join_mutex);
+    pthread_cond_destroy(&join_mutex);
+
 }
 
 // Executes work in the treadpool thats pointed by arg.

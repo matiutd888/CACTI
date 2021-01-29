@@ -73,7 +73,7 @@ int main(){
     send_message(0, msgGoDie);
     actor_system_join(0);
     actor_system_join(0);
-    sleep(3);
+    // sleep(3);
 printf(" ========= ROUND 2 ========\n");
     actor_system_create(&actorId, &role);
 
@@ -82,7 +82,7 @@ printf(" ========= ROUND 2 ========\n");
 
     actor_system_join(0);
     actor_system_join(0);
-    sleep(3);
+   // sleep(3);
 printf(" ========= ROUND 3 ========\n");
 
     if (actor_system_create(&actorId, &role) != 0) {
