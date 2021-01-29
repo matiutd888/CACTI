@@ -7,8 +7,6 @@
 #IncludeRegexTransform: 
 
 /home/mateusz/PW/projekt-C/mn418323/cacti.h
-pthread.h
--
 stddef.h
 -
 

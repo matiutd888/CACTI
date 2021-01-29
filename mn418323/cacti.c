@@ -117,7 +117,7 @@ tpool_t *tm;
 pthread_cond_t join_cond;
 
 
-static void destroy_system() {
+static void clean_actors() {
     printf("Destroying system, actors.count = %d, actors.dead\n", actors.count, actors.count_dead);
     for (size_t i = 0; i < actors.count; i++) {
         queue_destruct(actors.vec[i]->messages);
@@ -128,6 +128,17 @@ static void destroy_system() {
     }
     free(actors.vec);
     actors.vec = NULL;
+}
+
+static void destroy_system() {
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&(tm->work_cond));
+    pthread_cond_destroy(&(tm->working_cond));
+
+    clean_actors();
+    queue_destruct(tm->q);
+    free(tm);
+    tm = NULL;
 }
 
 void tpool_execute_messages(actor_id_t id);
@@ -165,29 +176,20 @@ void tpool_destroy() {
 
     cond_broadcast(&(tm->work_cond));
     unlock_mutex(&(mutex));
-    // printf("%d: destroy mutex unlock 1\n", pthread_self() % 100);
 
     tpool_wait();
-    // printf("Koniec czekania!\n");
     actors.dead = true;
 
-    pthread_cond_destroy(&(tm->work_cond));
-    pthread_cond_destroy(&(tm->working_cond));
-
-
-    // printf("%d: Destroying\n", pthread_self() % 100);
-    pthread_mutex_destroy(&mutex);
-
-    destroy_system();
-    queue_destruct(tm->q);
-    free(tm);
-
     if (joined) {
-//        printf("Budzę wątek główny!\n");
+        // Joined thread will clean thee
         cond_broadcast(&(join_cond));
+    } else {
+        destroy_system();
     }
     if (debug) printf("%d: Koniec kończącego procesu!\n", pthread_self() % 100);
 }
+
+
 
 void actor_system_join(actor_id_t actor) {
     // exit(1);
@@ -202,6 +204,7 @@ void actor_system_join(actor_id_t actor) {
     pthread_mutex_init(&join_mutex, 0);
     // printf("Próbuję wziąć join mutex 1\n");
     unlock_mutex(&mutex);
+    // służy tylko
     lock_mutex(&join_mutex);
     while (!actors.dead) {
         cond_wait(&join_cond, &join_mutex);
@@ -211,6 +214,8 @@ void actor_system_join(actor_id_t actor) {
     komunikat("koniec czekania na wątki");
     unlock_mutex(&join_mutex);
     pthread_mutex_destroy(&join_mutex);
+
+    destroy_system();
 
 }
 
