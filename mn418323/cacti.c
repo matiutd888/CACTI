@@ -174,11 +174,14 @@ void tpool_destroy() {
     pthread_cond_destroy(&(tm->work_cond));
     pthread_cond_destroy(&(tm->working_cond));
 
+
+    printf("%d: Destroying\n", pthread_self() % 100);
+    pthread_mutex_destroy(&mutex);
+
     destroy_system();
     queue_destruct(tm->q);
     free(tm);
-    printf("%d: Destroying\n", pthread_self() % 100);
-    pthread_mutex_destroy(&mutex);
+
     if (joined) {
 //        printf("Budzę wątek główny!\n");
         cond_broadcast(&(join_cond));
