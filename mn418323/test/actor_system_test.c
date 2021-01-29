@@ -5,7 +5,7 @@
 #include <assert.h>
 #include "../cacti.h"
 
-#define NO_INCREMENTS 100
+#define NO_INCREMENTS 1000
 
 int x=1;
 
@@ -72,7 +72,6 @@ int main(){
     send_message(0, msgGoDie);
 
     actor_system_join(0);
-    sleep(2);
     actor_system_join(0);
 
 //printf(" ========= ROUND 2 ========\n");

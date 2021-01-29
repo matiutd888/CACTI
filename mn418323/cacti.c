@@ -239,6 +239,8 @@ static void *tpool_worker() {
 }
 
 void actor_system_join(actor_id_t actor) {
+    if (actors.dead)
+        return;
     lock_mutex(&mutex);
     while (!actors.dead) {
         cond_wait(&join_cond, &mutex);
@@ -520,7 +522,7 @@ int send_message(actor_id_t id, message_t message) {
     }
     if( id == 0) {
         count_debug++;
-        printf("%lu\n", count_debug);
+        // printf("%lu\n", count_debug);
     }
 
     actor_t *act = actors.vec[id];
