@@ -46,6 +46,7 @@ void fun(void** stateptr, size_t size, void* data) {
 int main(){
     const size_t nprompts = 2;
     void (**prompts)(void**, size_t, void*) = malloc(sizeof(void*) * nprompts);
+    printf("MAIN THREAD ID %d\n", pthread_self() % 100);
     prompts[0] = &hello;
     prompts[1] = &fun;
     role_t role = {
@@ -64,15 +65,15 @@ int main(){
 
 
     actor_id_t actorId;
-//    actor_system_create(&actorId, &role);
-//
-//    send_message(actorId, msgSpawn);
-//    send_message(actorId, msgSpawn);
-//    send_message(0, msgGoDie);
-//
-//    actor_system_join(0);
-//    actor_system_join(0);
-//    sleep(3);
+    actor_system_create(&actorId, &role);
+
+    send_message(actorId, msgSpawn);
+    send_message(actorId, msgSpawn);
+  //  sleep(2);
+    send_message(0, msgGoDie);
+    actor_system_join(0);
+    actor_system_join(0);
+    sleep(3);
 printf(" ========= ROUND 2 ========\n");
     actor_system_create(&actorId, &role);
 
@@ -82,22 +83,22 @@ printf(" ========= ROUND 2 ========\n");
     actor_system_join(0);
     actor_system_join(0);
     sleep(3);
-//printf(" ========= ROUND 3 ========\n");
-//
-//    if (actor_system_create(&actorId, &role) != 0) {
-//        printf("Nie udało się stworzyć systemu aktorów!\n");
-//    }
-//
-//    send_message(actorId, msgGoDie);
-//    send_message(actorId, msgSpawn);
-//    send_message(actorId, msgSpawn);
-//    send_message(actorId, msgSpawn);
-//    printf("Zaraz przechodzę przez JOINa\n");
-//    actor_system_join(0);
-//    printf("Przeszedłem przez JOINa\n");
-//    actor_system_join(0);
-//
-//    sleep(5);
+printf(" ========= ROUND 3 ========\n");
+
+    if (actor_system_create(&actorId, &role) != 0) {
+        printf("Nie udało się stworzyć systemu aktorów!\n");
+    }
+
+    send_message(actorId, msgGoDie);
+    send_message(actorId, msgSpawn);
+    send_message(actorId, msgSpawn);
+    send_message(actorId, msgSpawn);
+    printf("Zaraz przechodzę przez JOINa\n");
+    actor_system_join(0);
+    printf("Przeszedłem przez JOINa\n");
+    actor_system_join(0);
+
+    sleep(5);
     free(prompts);
     return 0;
 }

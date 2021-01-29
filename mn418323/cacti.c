@@ -29,8 +29,10 @@ void komunikat(char *s) {
 
 void lock_mutex(pthread_mutex_t *mtx) {
     int result = pthread_mutex_lock(mtx);
-    if (result != 0)
+    if (result != 0) {
+        fprintf(stderr, "Błąd!  %d\n", pthread_self() % 100);
         syserr(result, "Mutex lock error!");
+    }
 }
 
 void unlock_mutex(pthread_mutex_t *mtx) {
@@ -117,7 +119,6 @@ pthread_cond_t join_cond;
 
 
 static void destroy_system() {
-
     for (size_t i = 0; i < actors.count; i++) {
         queue_destruct(actors.vec[i]->messages);
 
@@ -167,13 +168,8 @@ void tpool_destroy() {
     printf("%d: destroy mutex unlock 1\n", pthread_self() % 100);
 
     tpool_wait();
-
+    printf("Koniec czekania!\n");
     actors.dead = true;
-
-    if (joined) {
-//        printf("Budzę wątek główny!\n");
-        cond_broadcast(&(join_cond));
-    }
 
     pthread_cond_destroy(&(tm->work_cond));
     pthread_cond_destroy(&(tm->working_cond));
@@ -181,31 +177,36 @@ void tpool_destroy() {
     destroy_system();
     queue_destruct(tm->q);
     free(tm);
-    if (debug) printf("%d: Koniec kończącego procesu!\n", pthread_self() % 100);
 
     if (joined) {
-        unlock_mutex(&join_mutex);
-        printf("%d: destroy, join mutex unlock 2\n", pthread_self() % 100);
+//        printf("Budzę wątek główny!\n");
+        cond_broadcast(&(join_cond));
     }
+    if (debug) printf("%d: Koniec kończącego procesu!\n", pthread_self() % 100);
+    printf("%d: Destroying\n", pthread_self() % 100);
     pthread_mutex_destroy(&mutex);
 }
 
 void actor_system_join(actor_id_t actor) {
-    printf("Wywołało się join!\n");
+    // exit(1);
+    printf("JOIN WYWOLANE: %d\n", pthread_self());
     if (actors.dead)
         return;
+
+    printf("Próbuję wziąć zwykły mutex 1\n");
     lock_mutex(&mutex);
     joined = true;
     pthread_cond_init(&join_cond, NULL);
     pthread_mutex_init(&join_mutex, 0);
-
-    while (!actors.dead) {
-        cond_wait(&join_cond, &mutex);
-    }
+    printf("Próbuję wziąć join mutex 1\n");
     unlock_mutex(&mutex);
-    printf("%d: join, mutex unlock 1\n", pthread_self() % 100);
     lock_mutex(&join_mutex);
-    pthread_mutex_destroy(&join_mutex);
+    while (!actors.dead) {
+        cond_wait(&join_cond, &join_mutex);
+    }
+    unlock_mutex(&join_mutex);
+    pthread_cond_destroy(&join_mutex);
+    printf("%d: join, mutex unlock 1\n", pthread_self() % 100);
     pthread_cond_destroy(&join_cond);
     komunikat("koniec czekania na wątki");
 }
