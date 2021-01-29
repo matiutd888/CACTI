@@ -37,8 +37,7 @@ void fun(void** stateptr, size_t size, void* data) {
             .message_type = MSG_GODIE
     };
 
-    if(*(int*)data == 1+2*NO_INCREMENTS || *(int*)data == 1+4*NO_INCREMENTS)
-    {
+    if(*(int*)data == 1+2*NO_INCREMENTS || *(int*)data == 1+4*NO_INCREMENTS) {
         printf("FUNL: thread: %ld, actor: %ld\n", pthread_self(), actor_id_self());
         send_message(actor_id_self(),gdmsg);
     }
@@ -65,35 +64,40 @@ int main(){
 
 
     actor_id_t actorId;
+//    actor_system_create(&actorId, &role);
+//
+//    send_message(actorId, msgSpawn);
+//    send_message(actorId, msgSpawn);
+//    send_message(0, msgGoDie);
+//
+//    actor_system_join(0);
+//    actor_system_join(0);
+//    sleep(3);
+printf(" ========= ROUND 2 ========\n");
     actor_system_create(&actorId, &role);
 
     send_message(actorId, msgSpawn);
     send_message(actorId, msgSpawn);
-    send_message(0, msgGoDie);
 
     actor_system_join(0);
     actor_system_join(0);
-
-//printf(" ========= ROUND 2 ========\n");
-//    actor_system_create(&actorId, &role);
-//
-//    send_message(actorId, msgSpawn);
-//    send_message(actorId, msgSpawn);
-//
-//    actor_system_join(0);
-//    actor_system_join(0);
-
+    sleep(3);
 //printf(" ========= ROUND 3 ========\n");
 //
-//    actor_system_create(&actorId, &role);
+//    if (actor_system_create(&actorId, &role) != 0) {
+//        printf("Nie udało się stworzyć systemu aktorów!\n");
+//    }
 //
 //    send_message(actorId, msgGoDie);
 //    send_message(actorId, msgSpawn);
 //    send_message(actorId, msgSpawn);
 //    send_message(actorId, msgSpawn);
+//    printf("Zaraz przechodzę przez JOINa\n");
+//    actor_system_join(0);
+//    printf("Przeszedłem przez JOINa\n");
+//    actor_system_join(0);
 //
-//    actor_system_join(0);
-//    actor_system_join(0);
+//    sleep(5);
     free(prompts);
     return 0;
 }
