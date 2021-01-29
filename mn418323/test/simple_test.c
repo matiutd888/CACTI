@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <assert.h>
+#include <signal.h>
 
 void hello(void **stateptr, size_t size, void *data) {
 //    assert(*stateptr == NULL);
@@ -61,7 +62,6 @@ int main() {
 
     send_message(actorId, godie);
     actor_system_join(0);
-
     // sleep(5);
     free(prompts);
 }

@@ -1,0 +1,1 @@
+/usr/bin/cc -g -Wall -Wextra -pthread -g   CMakeFiles/test_janek.dir/actor_system_test.c.o  -o test_janek  ../libcacti.a 

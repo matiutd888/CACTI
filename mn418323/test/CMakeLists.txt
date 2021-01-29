@@ -9,4 +9,8 @@ add_test(test_janek test_janek)
 add_executable(simple simple_test.c)
 add_test(simple simple)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -pthread")
+add_executable(chaos chaos.cpp)
+
 set_tests_properties(test_empty PROPERTIES TIMEOUT 1)

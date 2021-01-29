@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/mateusz/PW/projekt-C/mn418323/cacti.h
+pthread.h
+-
+stddef.h
+-
+
+/home/mateusz/PW/projekt-C/mn418323/test/actor_system_test.c
+pthread.h
+-
+stdio.h
+-
+unistd.h
+-
+stdlib.h
+-
+assert.h
+-
+../cacti.h
+/home/mateusz/PW/projekt-C/mn418323/cacti.h
+

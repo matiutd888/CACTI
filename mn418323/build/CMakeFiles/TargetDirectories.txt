@@ -1,0 +1,3 @@
+/home/mateusz/PW/projekt-C/mn418323/build/CMakeFiles/rebuild_cache.dir
+/home/mateusz/PW/projekt-C/mn418323/build/CMakeFiles/edit_cache.dir
+/home/mateusz/PW/projekt-C/mn418323/build/CMakeFiles/test_janek.dir
