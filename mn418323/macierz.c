@@ -89,7 +89,7 @@ void get_son_id(void **stateptr, size_t size, void *data) {
 // Dostaje numer kolumny w data
 void save_col_and_spawn(void **stateptr, size_t size, void *data) {
     UNUSED(size);
-    
+
     actor *act = *stateptr;
     actor *father = data;
     act->col = father->col + 1;
@@ -116,7 +116,7 @@ void save_col_and_spawn(void **stateptr, size_t size, void *data) {
 
 void create_system(void **stateptr, size_t size, void *data) {
     UNUSED(size);
-    
+
     *stateptr = malloc(ACTOR_SIZE);
     actor *init = data;
     actor *act = *stateptr;
@@ -135,7 +135,7 @@ void create_system(void **stateptr, size_t size, void *data) {
 
 void calculate(void **stateptr, size_t size, void *data) {
     UNUSED(size);
-    
+
     row_t *r = data;
     actor *act = *stateptr;
     r->sum += act->macierz[r->row][act->col];
@@ -191,7 +191,6 @@ int main() {
 
     int k, n;
 
-
     scanf("%d", &k);
     scanf("%d", &n);
     // printf("%d %d\n", k, n);
@@ -230,10 +229,12 @@ int main() {
 
     send_message(origin, msg);
     actor_system_join(origin);
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < k; ++i) {
         free(macierz[i]);
         free(milisec[i]);
     }
-    free(macierz);
-    free(milisec);
+    if (macierz != NULL)
+        free(macierz);
+    if (milisec != NULL)
+        free(milisec);
 }
