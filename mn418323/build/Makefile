@@ -56,6 +56,52 @@ CMAKE_BINARY_DIR = /home/mateusz/PW/projekt-C/mn418323/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
+
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -77,6 +123,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+
+.PHONY : test/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,6 +168,71 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named silnia
+
+# Build rule for target.
+silnia: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 silnia
+.PHONY : silnia
+
+# fast build rule for target.
+silnia/fast:
+	$(MAKE) -f CMakeFiles/silnia.dir/build.make CMakeFiles/silnia.dir/build
+.PHONY : silnia/fast
+
+#=============================================================================
+# Target rules for targets named macierz
+
+# Build rule for target.
+macierz: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 macierz
+.PHONY : macierz
+
+# fast build rule for target.
+macierz/fast:
+	$(MAKE) -f CMakeFiles/macierz.dir/build.make CMakeFiles/macierz.dir/build
+.PHONY : macierz/fast
+
+#=============================================================================
+# Target rules for targets named cacti
+
+# Build rule for target.
+cacti: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 cacti
+.PHONY : cacti
+
+# fast build rule for target.
+cacti/fast:
+	$(MAKE) -f CMakeFiles/cacti.dir/build.make CMakeFiles/cacti.dir/build
+.PHONY : cacti/fast
+
+#=============================================================================
+# Target rules for targets named chaos
+
+# Build rule for target.
+chaos: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 chaos
+.PHONY : chaos
+
+# fast build rule for target.
+chaos/fast:
+	$(MAKE) -f test/CMakeFiles/chaos.dir/build.make test/CMakeFiles/chaos.dir/build
+.PHONY : chaos/fast
+
+#=============================================================================
+# Target rules for targets named simple
+
+# Build rule for target.
+simple: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 simple
+.PHONY : simple
+
+# fast build rule for target.
+simple/fast:
+	$(MAKE) -f test/CMakeFiles/simple.dir/build.make test/CMakeFiles/simple.dir/build
+.PHONY : simple/fast
+
+#=============================================================================
 # Target rules for targets named test_janek
 
 # Build rule for target.
@@ -120,35 +242,21 @@ test_janek: cmake_check_build_system
 
 # fast build rule for target.
 test_janek/fast:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/build
+	$(MAKE) -f test/CMakeFiles/test_janek.dir/build.make test/CMakeFiles/test_janek.dir/build
 .PHONY : test_janek/fast
 
-actor_system_test.o: actor_system_test.c.o
+#=============================================================================
+# Target rules for targets named test_empty
 
-.PHONY : actor_system_test.o
+# Build rule for target.
+test_empty: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_empty
+.PHONY : test_empty
 
-# target to build an object file
-actor_system_test.c.o:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/actor_system_test.c.o
-.PHONY : actor_system_test.c.o
-
-actor_system_test.i: actor_system_test.c.i
-
-.PHONY : actor_system_test.i
-
-# target to preprocess a source file
-actor_system_test.c.i:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/actor_system_test.c.i
-.PHONY : actor_system_test.c.i
-
-actor_system_test.s: actor_system_test.c.s
-
-.PHONY : actor_system_test.s
-
-# target to generate assembly for a file
-actor_system_test.c.s:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/actor_system_test.c.s
-.PHONY : actor_system_test.c.s
+# fast build rule for target.
+test_empty/fast:
+	$(MAKE) -f test/CMakeFiles/test_empty.dir/build.make test/CMakeFiles/test_empty.dir/build
+.PHONY : test_empty/fast
 
 cacti.o: cacti.c.o
 
@@ -156,7 +264,7 @@ cacti.o: cacti.c.o
 
 # target to build an object file
 cacti.c.o:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/cacti.c.o
+	$(MAKE) -f CMakeFiles/cacti.dir/build.make CMakeFiles/cacti.dir/cacti.c.o
 .PHONY : cacti.c.o
 
 cacti.i: cacti.c.i
@@ -165,7 +273,7 @@ cacti.i: cacti.c.i
 
 # target to preprocess a source file
 cacti.c.i:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/cacti.c.i
+	$(MAKE) -f CMakeFiles/cacti.dir/build.make CMakeFiles/cacti.dir/cacti.c.i
 .PHONY : cacti.c.i
 
 cacti.s: cacti.c.s
@@ -174,7 +282,7 @@ cacti.s: cacti.c.s
 
 # target to generate assembly for a file
 cacti.c.s:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/cacti.c.s
+	$(MAKE) -f CMakeFiles/cacti.dir/build.make CMakeFiles/cacti.dir/cacti.c.s
 .PHONY : cacti.c.s
 
 err.o: err.c.o
@@ -183,7 +291,7 @@ err.o: err.c.o
 
 # target to build an object file
 err.c.o:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/err.c.o
+	$(MAKE) -f CMakeFiles/cacti.dir/build.make CMakeFiles/cacti.dir/err.c.o
 .PHONY : err.c.o
 
 err.i: err.c.i
@@ -192,7 +300,7 @@ err.i: err.c.i
 
 # target to preprocess a source file
 err.c.i:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/err.c.i
+	$(MAKE) -f CMakeFiles/cacti.dir/build.make CMakeFiles/cacti.dir/err.c.i
 .PHONY : err.c.i
 
 err.s: err.c.s
@@ -201,8 +309,35 @@ err.s: err.c.s
 
 # target to generate assembly for a file
 err.c.s:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/err.c.s
+	$(MAKE) -f CMakeFiles/cacti.dir/build.make CMakeFiles/cacti.dir/err.c.s
 .PHONY : err.c.s
+
+macierz.o: macierz.c.o
+
+.PHONY : macierz.o
+
+# target to build an object file
+macierz.c.o:
+	$(MAKE) -f CMakeFiles/macierz.dir/build.make CMakeFiles/macierz.dir/macierz.c.o
+.PHONY : macierz.c.o
+
+macierz.i: macierz.c.i
+
+.PHONY : macierz.i
+
+# target to preprocess a source file
+macierz.c.i:
+	$(MAKE) -f CMakeFiles/macierz.dir/build.make CMakeFiles/macierz.dir/macierz.c.i
+.PHONY : macierz.c.i
+
+macierz.s: macierz.c.s
+
+.PHONY : macierz.s
+
+# target to generate assembly for a file
+macierz.c.s:
+	$(MAKE) -f CMakeFiles/macierz.dir/build.make CMakeFiles/macierz.dir/macierz.c.s
+.PHONY : macierz.c.s
 
 queue.o: queue.c.o
 
@@ -210,7 +345,7 @@ queue.o: queue.c.o
 
 # target to build an object file
 queue.c.o:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/queue.c.o
+	$(MAKE) -f CMakeFiles/cacti.dir/build.make CMakeFiles/cacti.dir/queue.c.o
 .PHONY : queue.c.o
 
 queue.i: queue.c.i
@@ -219,7 +354,7 @@ queue.i: queue.c.i
 
 # target to preprocess a source file
 queue.c.i:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/queue.c.i
+	$(MAKE) -f CMakeFiles/cacti.dir/build.make CMakeFiles/cacti.dir/queue.c.i
 .PHONY : queue.c.i
 
 queue.s: queue.c.s
@@ -228,8 +363,35 @@ queue.s: queue.c.s
 
 # target to generate assembly for a file
 queue.c.s:
-	$(MAKE) -f CMakeFiles/test_janek.dir/build.make CMakeFiles/test_janek.dir/queue.c.s
+	$(MAKE) -f CMakeFiles/cacti.dir/build.make CMakeFiles/cacti.dir/queue.c.s
 .PHONY : queue.c.s
+
+silnia.o: silnia.c.o
+
+.PHONY : silnia.o
+
+# target to build an object file
+silnia.c.o:
+	$(MAKE) -f CMakeFiles/silnia.dir/build.make CMakeFiles/silnia.dir/silnia.c.o
+.PHONY : silnia.c.o
+
+silnia.i: silnia.c.i
+
+.PHONY : silnia.i
+
+# target to preprocess a source file
+silnia.c.i:
+	$(MAKE) -f CMakeFiles/silnia.dir/build.make CMakeFiles/silnia.dir/silnia.c.i
+.PHONY : silnia.c.i
+
+silnia.s: silnia.c.s
+
+.PHONY : silnia.s
+
+# target to generate assembly for a file
+silnia.c.s:
+	$(MAKE) -f CMakeFiles/silnia.dir/build.make CMakeFiles/silnia.dir/silnia.c.s
+.PHONY : silnia.c.s
 
 # Help Target
 help:
@@ -237,21 +399,35 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... install/strip"
+	@echo "... install/local"
+	@echo "... install"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... test"
+	@echo "... silnia"
+	@echo "... macierz"
+	@echo "... cacti"
+	@echo "... chaos"
+	@echo "... simple"
 	@echo "... test_janek"
-	@echo "... actor_system_test.o"
-	@echo "... actor_system_test.i"
-	@echo "... actor_system_test.s"
+	@echo "... test_empty"
 	@echo "... cacti.o"
 	@echo "... cacti.i"
 	@echo "... cacti.s"
 	@echo "... err.o"
 	@echo "... err.i"
 	@echo "... err.s"
+	@echo "... macierz.o"
+	@echo "... macierz.i"
+	@echo "... macierz.s"
 	@echo "... queue.o"
 	@echo "... queue.i"
 	@echo "... queue.s"
+	@echo "... silnia.o"
+	@echo "... silnia.i"
+	@echo "... silnia.s"
 .PHONY : help
 
 

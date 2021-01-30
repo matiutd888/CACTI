@@ -91,8 +91,6 @@ actor_vec_t actors = {
         .signaled = false};
 
 pthread_mutex_t mutex;
-pthread_mutex_t join_mutex;
-
 // struct sigaction action;
 // sigset_t block_mask;
 
@@ -180,13 +178,13 @@ void tpool_destroy() {
     tpool_wait();
     actors.dead = true;
 
-    if (joined) {
+    if (!joined) {
         // Joined thread will clean thee
-        cond_broadcast(&(join_cond));
-    } else {
         destroy_system();
+    } else {
+        cond_broadcast(&(join_cond));
     }
-    if (debug) printf("%d: Koniec kończącego procesu!\n", pthread_self() % 100);
+    pthread_exit(NULL);
 }
 
 
@@ -196,25 +194,15 @@ void actor_system_join(actor_id_t actor) {
     // printf("JOIN WYWOLANE: %d\n", pthread_self());
     if (actors.dead)
         return;
-
-    // printf("Próbuję wziąć zwykły mutex 1\n");
     lock_mutex(&mutex);
     joined = true;
     pthread_cond_init(&join_cond, NULL);
-    pthread_mutex_init(&join_mutex, 0);
-    // printf("Próbuję wziąć join mutex 1\n");
-    unlock_mutex(&mutex);
-    // służy tylko
-    lock_mutex(&join_mutex);
     while (!actors.dead) {
-        cond_wait(&join_cond, &join_mutex);
+        cond_wait(&join_cond, &mutex);
     }
-    // printf("%d: join, mutex unlock 1\n", pthread_self() % 100);
     pthread_cond_destroy(&join_cond);
     komunikat("koniec czekania na wątki");
-    unlock_mutex(&join_mutex);
-    pthread_mutex_destroy(&join_mutex);
-
+    unlock_mutex(&mutex);
     destroy_system();
     // TODO kolejka aktorów to mogą być po prostu inty;
 }

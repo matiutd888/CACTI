@@ -106,7 +106,6 @@ void calculate(void **stateptr, size_t size, void *data) {
 int main() {
     int n;
     scanf("%d", &n);
-    printf("n factorial counting...\n");
     actor_id_t father;
     fact_t f;
     f.stop = n;
@@ -117,5 +116,4 @@ int main() {
     };
     send_message(father, message);
     actor_system_join(father);
-    sleep(2);
 }
