@@ -201,6 +201,8 @@ int main() {
         }
     }
 
+    printf("Dupa\n");
+
     actor_id_t origin;
     actor_system_create(&origin, &role_father);
     actor init = {

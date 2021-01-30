@@ -66,7 +66,7 @@ static void* safe_malloc(size_t size) {
 }
 typedef struct actor_struct {
     role_t role;
-    actor_id_t actor_id;
+    actor_id_t *actor_id;
     bool is_dead;
     queue_t *messages;
     pthread_mutex_t mutex;
@@ -119,6 +119,7 @@ static void clean_actors() {
     // printf("Destroying system, actors.count = %d, actors.dead\n", actors.count, actors.count_dead);
     for (size_t i = 0; i < actors.count; i++) {
         queue_destruct(actors.vec[i]->messages);
+        free(actors.vec[i]->actor_id);
         free(actors.vec[i]);
     }
     free(actors.vec);
@@ -190,7 +191,9 @@ static actor_t *new_actor(role_t *role) {
     if (pthread_mutex_init(&(new_act->mutex), 0) != 0)
         syserr(1, "Nie udało się zainicjolować mutexa");
 
-    new_act->actor_id = new_id;
+
+    new_act->actor_id = malloc(sizeof(actor_id_t));
+    *(new_act->actor_id) = new_id;
     new_act->messages = queue_init(INITIAL_MESSAGES_QUEUE_SIZE);
     new_act->has_messages = false;
     new_act->role = *role;
@@ -273,7 +276,7 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
     actor_t *act = new_actor(role);
     add_actor(act);
 
-    *actor = act->actor_id;
+    *actor = *(act->actor_id);
 
 //    sigemptyset(&block_mask);
 //    sigaddset(&block_mask, SIGINT);
@@ -306,10 +309,10 @@ static void run_spawn(actor_t *actor, message_t *msg) {
     unlock_mutex(&mutex);
 
     message_t message;
-    message.data = (void *) (actor->actor_id);
+    message.data = (void *) (*(actor->actor_id));
     message.message_type = MSG_HELLO;
-    message.nbytes = sizeof(actor->actor_id);
-    send_message(new_act->actor_id, message);
+    message.nbytes = sizeof(actor_id_t);
+    send_message(*(new_act->actor_id), message);
 }
 
 static void run_message(actor_t *actor, message_t *msg) {
@@ -331,9 +334,6 @@ static void run_message(actor_t *actor, message_t *msg) {
     actor->role.prompts[msg->message_type](&(actor->state), msg->nbytes, msg->data);
 }
 
-static void free_msg(message_t *msg) {
-    free(msg);
-}
 
 static void tpool_execute_messages(actor_id_t id) {
     curr_id = id;
@@ -360,15 +360,14 @@ static void tpool_execute_messages(actor_id_t id) {
         unlock_mutex(&(actor->mutex));
 
         run_message(actor, msg);
-        free_msg(msg);
+        free(msg);
         messages_count--;
     }
 
     lock_mutex(&mutex);
     lock_mutex(&actor->mutex);
     if (actor->has_messages) {
-        actor_id_t *work_id = safe_malloc(sizeof(actor_id_t));
-        *work_id = id;
+        actor_id_t *work_id = actor->actor_id;
         queue_push(tpool->q, work_id);
         tpool_add_notify();
     }
@@ -408,7 +407,6 @@ static void *tpool_worker() {
         if (id != NULL) {
             if (debug) printf("%lu: Mam jakąś pracę! aktorID = %ld\n", pthread_self() % 100, *id);
             tpool_execute_messages(*id);
-            free(id);
         }
 
         lock_mutex(&(mutex));
@@ -481,8 +479,8 @@ int send_message(actor_id_t id, message_t message) {
                        pthread_self() % 100,
                        id,
                        queue_size(act->messages));
-            work_id = safe_malloc(sizeof(actor_id_t));
-            *work_id = id;
+
+            work_id = act->actor_id;
             queue_push(tpool->q, work_id);
             tpool_add_notify();
         }

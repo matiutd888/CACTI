@@ -81,9 +81,7 @@ static void resize(queue_t *q) {
 }
 
 static void enhance_queue(queue_t *q) {
-    print_queue(q);
     cyclic(q);
-    print_queue(q);
     resize(q);
 }
 
