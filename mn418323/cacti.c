@@ -7,13 +7,18 @@
 #include <signal.h>
 
 #define RESIZE_MULTPIER 2
+
 #define INITIAL_ACTORS_SIZE 3
-#define INITIAL_MESSAGES_QUEUE_SIZE 1024
+#define INITIAL_MESSAGES_QUEUE_SIZE ACTOR_QUEUE_LIMIT
 #define ACTOR_SIZE sizeof(actor_t)
 
 #define NO_ACTOR_OF_ID (-2)
 
 #define ACTOR_IS_DEAD (-1)
+
+#define QUEUE_LIMIT_REACHED (-3)
+
+#define WRONG_TYPE (-4)
 
 bool debug = false;
 
@@ -112,10 +117,6 @@ static void clean_actors() {
     // printf("Destroying system, actors.count = %d, actors.dead\n", actors.count, actors.count_dead);
     for (size_t i = 0; i < actors.count; i++) {
         queue_destruct(actors.vec[i]->messages);
-
-//        if (actors.vec[i]->state != NULL)
-//            free(actors.vec[i]->state); // TODO czy zwalniamy stateptr (wygląda na to, że nie)
-
         free(actors.vec[i]);
     }
     free(actors.vec);
@@ -177,7 +178,6 @@ void tpool_destroy() {
         cond_broadcast(&(join_cond));
     }
 }
-
 
 void actor_system_join(actor_id_t actor) {
     if (actors.dead)
@@ -507,16 +507,15 @@ int send_message(actor_id_t id, message_t message) {
     if (queue_size(act->messages) == ACTOR_QUEUE_LIMIT) {
         unlock_mutex(&(act->mutex));
         unlock_mutex(&(mutex));
-        return -3;
+        return QUEUE_LIMIT_REACHED;
     }
-    // TODO zdefiniować stałą.
 
     if (act->role.nprompts <= message.message_type
         && message.message_type != MSG_GODIE
         && message.message_type != MSG_SPAWN) {
         unlock_mutex(&(act->mutex));
         unlock_mutex(&(mutex));
-        return -4; // TODO zdefiniować stałą
+        return WRONG_TYPE;
     }
 
     message_t *m = create_message(message);
