@@ -220,6 +220,32 @@ chaos/fast:
 .PHONY : chaos/fast
 
 #=============================================================================
+# Target rules for targets named test_queue
+
+# Build rule for target.
+test_queue: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_queue
+.PHONY : test_queue
+
+# fast build rule for target.
+test_queue/fast:
+	$(MAKE) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/build
+.PHONY : test_queue/fast
+
+#=============================================================================
+# Target rules for targets named test_deadlock
+
+# Build rule for target.
+test_deadlock: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_deadlock
+.PHONY : test_deadlock
+
+# fast build rule for target.
+test_deadlock/fast:
+	$(MAKE) -f test/CMakeFiles/test_deadlock.dir/build.make test/CMakeFiles/test_deadlock.dir/build
+.PHONY : test_deadlock/fast
+
+#=============================================================================
 # Target rules for targets named simple
 
 # Build rule for target.
@@ -410,6 +436,8 @@ help:
 	@echo "... macierz"
 	@echo "... cacti"
 	@echo "... chaos"
+	@echo "... test_queue"
+	@echo "... test_deadlock"
 	@echo "... simple"
 	@echo "... test_janek"
 	@echo "... test_empty"

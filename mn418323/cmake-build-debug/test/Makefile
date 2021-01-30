@@ -76,6 +76,30 @@ CMAKE_BINARY_DIR = /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/snap/clion/139/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/snap/clion/139/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/snap/clion/139/bin/cmake/linux/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/snap/clion/139/bin/cmake/linux/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
 # Special rule for the target install/strip
 install/strip: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
@@ -97,30 +121,6 @@ list_install_components:
 list_install_components/fast: list_install_components
 
 .PHONY : list_install_components/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/snap/clion/139/bin/cmake/linux/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/snap/clion/139/bin/cmake/linux/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/snap/clion/139/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/snap/clion/139/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
 
 # Special rule for the target test
 test:
@@ -233,6 +233,21 @@ test_janek/fast:
 .PHONY : test_janek/fast
 
 # Convenience name for target.
+test/CMakeFiles/test_deadlock.dir/rule:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_deadlock.dir/rule
+.PHONY : test/CMakeFiles/test_deadlock.dir/rule
+
+# Convenience name for target.
+test_deadlock: test/CMakeFiles/test_deadlock.dir/rule
+
+.PHONY : test_deadlock
+
+# fast build rule for target.
+test_deadlock/fast:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_deadlock.dir/build.make test/CMakeFiles/test_deadlock.dir/build
+.PHONY : test_deadlock/fast
+
+# Convenience name for target.
 test/CMakeFiles/test_empty.dir/rule:
 	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_empty.dir/rule
 .PHONY : test/CMakeFiles/test_empty.dir/rule
@@ -246,6 +261,21 @@ test_empty: test/CMakeFiles/test_empty.dir/rule
 test_empty/fast:
 	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_empty.dir/build.make test/CMakeFiles/test_empty.dir/build
 .PHONY : test_empty/fast
+
+# Convenience name for target.
+test/CMakeFiles/test_queue.dir/rule:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_queue.dir/rule
+.PHONY : test/CMakeFiles/test_queue.dir/rule
+
+# Convenience name for target.
+test_queue: test/CMakeFiles/test_queue.dir/rule
+
+.PHONY : test_queue
+
+# fast build rule for target.
+test_queue/fast:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/build
+.PHONY : test_queue/fast
 
 actor_system_test.o: actor_system_test.c.o
 
@@ -301,6 +331,33 @@ chaos.cpp.s:
 	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/chaos.dir/build.make test/CMakeFiles/chaos.dir/chaos.cpp.s
 .PHONY : chaos.cpp.s
 
+queue.o: queue.c.o
+
+.PHONY : queue.o
+
+# target to build an object file
+queue.c.o:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/queue.c.o
+.PHONY : queue.c.o
+
+queue.i: queue.c.i
+
+.PHONY : queue.i
+
+# target to preprocess a source file
+queue.c.i:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/queue.c.i
+.PHONY : queue.c.i
+
+queue.s: queue.c.s
+
+.PHONY : queue.s
+
+# target to generate assembly for a file
+queue.c.s:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/queue.c.s
+.PHONY : queue.c.s
+
 simple_test.o: simple_test.c.o
 
 .PHONY : simple_test.o
@@ -327,6 +384,33 @@ simple_test.s: simple_test.c.s
 simple_test.c.s:
 	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/simple.dir/build.make test/CMakeFiles/simple.dir/simple_test.c.s
 .PHONY : simple_test.c.s
+
+test_deadlock.o: test_deadlock.c.o
+
+.PHONY : test_deadlock.o
+
+# target to build an object file
+test_deadlock.c.o:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_deadlock.dir/build.make test/CMakeFiles/test_deadlock.dir/test_deadlock.c.o
+.PHONY : test_deadlock.c.o
+
+test_deadlock.i: test_deadlock.c.i
+
+.PHONY : test_deadlock.i
+
+# target to preprocess a source file
+test_deadlock.c.i:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_deadlock.dir/build.make test/CMakeFiles/test_deadlock.dir/test_deadlock.c.i
+.PHONY : test_deadlock.c.i
+
+test_deadlock.s: test_deadlock.c.s
+
+.PHONY : test_deadlock.s
+
+# target to generate assembly for a file
+test_deadlock.c.s:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_deadlock.dir/build.make test/CMakeFiles/test_deadlock.dir/test_deadlock.c.s
+.PHONY : test_deadlock.c.s
 
 test_empty.o: test_empty.c.o
 
@@ -370,17 +454,25 @@ help:
 	@echo "... test"
 	@echo "... chaos"
 	@echo "... simple"
+	@echo "... test_deadlock"
 	@echo "... test_empty"
 	@echo "... test_janek"
+	@echo "... test_queue"
 	@echo "... actor_system_test.o"
 	@echo "... actor_system_test.i"
 	@echo "... actor_system_test.s"
 	@echo "... chaos.o"
 	@echo "... chaos.i"
 	@echo "... chaos.s"
+	@echo "... queue.o"
+	@echo "... queue.i"
+	@echo "... queue.s"
 	@echo "... simple_test.o"
 	@echo "... simple_test.i"
 	@echo "... simple_test.s"
+	@echo "... test_deadlock.o"
+	@echo "... test_deadlock.i"
+	@echo "... test_deadlock.s"
 	@echo "... test_empty.o"
 	@echo "... test_empty.i"
 	@echo "... test_empty.s"

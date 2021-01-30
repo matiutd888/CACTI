@@ -56,5 +56,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "test/CMakeFiles/chaos.dir/DependInfo.cmake"
   "test/CMakeFiles/simple.dir/DependInfo.cmake"
   "test/CMakeFiles/test_janek.dir/DependInfo.cmake"
+  "test/CMakeFiles/test_deadlock.dir/DependInfo.cmake"
   "test/CMakeFiles/test_empty.dir/DependInfo.cmake"
+  "test/CMakeFiles/test_queue.dir/DependInfo.cmake"
   )

@@ -51,6 +51,8 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/macierz.dir/DependInfo.cmake"
   "CMakeFiles/cacti.dir/DependInfo.cmake"
   "test/CMakeFiles/chaos.dir/DependInfo.cmake"
+  "test/CMakeFiles/test_queue.dir/DependInfo.cmake"
+  "test/CMakeFiles/test_deadlock.dir/DependInfo.cmake"
   "test/CMakeFiles/simple.dir/DependInfo.cmake"
   "test/CMakeFiles/test_janek.dir/DependInfo.cmake"
   "test/CMakeFiles/test_empty.dir/DependInfo.cmake"

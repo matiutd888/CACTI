@@ -12,9 +12,11 @@
 /home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/install.dir
 /home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/list_install_components.dir
 /home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/rebuild_cache.dir
+/home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/chaos.dir
 /home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/edit_cache.dir
 /home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/test.dir
-/home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/chaos.dir
+/home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/test_queue.dir
+/home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/test_deadlock.dir
 /home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/install/strip.dir
 /home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/simple.dir
 /home/mateusz/PW/projekt-C/mn418323/build/test/CMakeFiles/test_janek.dir

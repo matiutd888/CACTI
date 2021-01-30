@@ -63,9 +63,12 @@ void reverse(queue_t *q, size_t l, size_t r) {
 void cyclic(queue_t *q) {
     if (q->size < 2)
         return;
-    reverse(q, 0, q->size - 1);
-    reverse(q, 0, q->write);
+    if (q->read == 0)
+        return;
+
+    reverse(q, 0, q->write - 1);
     reverse(q, q->read, q->size - 1);
+    reverse(q, 0, q->size - 1);
     q->read = 0;
     q->write = q->size;
 }
@@ -83,7 +86,9 @@ static void resize(queue_t *q) {
 }
 
 static void enhance_queue(queue_t *q) {
+    print_queue(q);
     cyclic(q);
+    print_queue(q);
     resize(q);
 }
 
@@ -125,4 +130,11 @@ void queue_destruct(queue_t *q) {
 
 size_t queue_size(queue_t *q) {
     return q->count;
+}
+
+void print_queue(queue_t *q) {
+    for (int i = 0; i < q->count; ++i) {
+        printf("%d -> ", *(int *)q->arr[(q->read + i) % (q->size)]);
+    }
+    printf("\n");
 }

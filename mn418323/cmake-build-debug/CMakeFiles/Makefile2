@@ -100,7 +100,9 @@ clean: test/clean
 test/all: test/CMakeFiles/chaos.dir/all
 test/all: test/CMakeFiles/simple.dir/all
 test/all: test/CMakeFiles/test_janek.dir/all
+test/all: test/CMakeFiles/test_deadlock.dir/all
 test/all: test/CMakeFiles/test_empty.dir/all
+test/all: test/CMakeFiles/test_queue.dir/all
 
 .PHONY : test/all
 
@@ -113,7 +115,9 @@ test/preinstall:
 test/clean: test/CMakeFiles/chaos.dir/clean
 test/clean: test/CMakeFiles/simple.dir/clean
 test/clean: test/CMakeFiles/test_janek.dir/clean
+test/clean: test/CMakeFiles/test_deadlock.dir/clean
 test/clean: test/CMakeFiles/test_empty.dir/clean
+test/clean: test/CMakeFiles/test_queue.dir/clean
 
 .PHONY : test/clean
 
@@ -259,7 +263,7 @@ test/CMakeFiles/simple.dir/clean:
 test/CMakeFiles/test_janek.dir/all: CMakeFiles/cacti.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_janek.dir/build.make test/CMakeFiles/test_janek.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_janek.dir/build.make test/CMakeFiles/test_janek.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles --progress-num=15,16 "Built target test_janek"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles --progress-num=17,18 "Built target test_janek"
 .PHONY : test/CMakeFiles/test_janek.dir/all
 
 # Build rule for subdir invocation for target.
@@ -280,13 +284,40 @@ test/CMakeFiles/test_janek.dir/clean:
 .PHONY : test/CMakeFiles/test_janek.dir/clean
 
 #=============================================================================
+# Target rules for target test/CMakeFiles/test_deadlock.dir
+
+# All Build rule for target.
+test/CMakeFiles/test_deadlock.dir/all: CMakeFiles/cacti.dir/all
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_deadlock.dir/build.make test/CMakeFiles/test_deadlock.dir/depend
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_deadlock.dir/build.make test/CMakeFiles/test_deadlock.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles --progress-num=13,14 "Built target test_deadlock"
+.PHONY : test/CMakeFiles/test_deadlock.dir/all
+
+# Build rule for subdir invocation for target.
+test/CMakeFiles/test_deadlock.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_deadlock.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles 0
+.PHONY : test/CMakeFiles/test_deadlock.dir/rule
+
+# Convenience name for target.
+test_deadlock: test/CMakeFiles/test_deadlock.dir/rule
+
+.PHONY : test_deadlock
+
+# clean rule for target.
+test/CMakeFiles/test_deadlock.dir/clean:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_deadlock.dir/build.make test/CMakeFiles/test_deadlock.dir/clean
+.PHONY : test/CMakeFiles/test_deadlock.dir/clean
+
+#=============================================================================
 # Target rules for target test/CMakeFiles/test_empty.dir
 
 # All Build rule for target.
 test/CMakeFiles/test_empty.dir/all: CMakeFiles/cacti.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_empty.dir/build.make test/CMakeFiles/test_empty.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_empty.dir/build.make test/CMakeFiles/test_empty.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles --progress-num=13,14 "Built target test_empty"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles --progress-num=15,16 "Built target test_empty"
 .PHONY : test/CMakeFiles/test_empty.dir/all
 
 # Build rule for subdir invocation for target.
@@ -305,6 +336,33 @@ test_empty: test/CMakeFiles/test_empty.dir/rule
 test/CMakeFiles/test_empty.dir/clean:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_empty.dir/build.make test/CMakeFiles/test_empty.dir/clean
 .PHONY : test/CMakeFiles/test_empty.dir/clean
+
+#=============================================================================
+# Target rules for target test/CMakeFiles/test_queue.dir
+
+# All Build rule for target.
+test/CMakeFiles/test_queue.dir/all: CMakeFiles/cacti.dir/all
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/depend
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles --progress-num=19,20 "Built target test_queue"
+.PHONY : test/CMakeFiles/test_queue.dir/all
+
+# Build rule for subdir invocation for target.
+test/CMakeFiles/test_queue.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_queue.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles 0
+.PHONY : test/CMakeFiles/test_queue.dir/rule
+
+# Convenience name for target.
+test_queue: test/CMakeFiles/test_queue.dir/rule
+
+.PHONY : test_queue
+
+# clean rule for target.
+test/CMakeFiles/test_queue.dir/clean:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/clean
+.PHONY : test/CMakeFiles/test_queue.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

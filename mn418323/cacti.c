@@ -247,7 +247,6 @@ bool tpool_add_notify() {
     return true;
 }
 
-//---------------------------------------------------------------
 
 void resize_actors() {
     actors.size = actors.size * RESIZE_MULTPIER + 1;

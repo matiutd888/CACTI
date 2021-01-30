@@ -6,27 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/home/mateusz/PW/projekt-C/mn418323/cacti.c
-cacti.h
-/home/mateusz/PW/projekt-C/mn418323/cacti.h
+/home/mateusz/PW/projekt-C/mn418323/queue.c
 queue.h
 /home/mateusz/PW/projekt-C/mn418323/queue.h
-stdio.h
+stdlib.h
 -
-pthread.h
--
-err.h
-/home/mateusz/PW/projekt-C/mn418323/err.h
 stdbool.h
 -
-signal.h
+stdio.h
 -
-
-/home/mateusz/PW/projekt-C/mn418323/cacti.h
-stddef.h
--
-
-/home/mateusz/PW/projekt-C/mn418323/err.h
 
 /home/mateusz/PW/projekt-C/mn418323/queue.h
 stdlib.h

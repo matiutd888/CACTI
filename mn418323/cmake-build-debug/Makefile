@@ -266,6 +266,19 @@ test_janek/fast:
 .PHONY : test_janek/fast
 
 #=============================================================================
+# Target rules for targets named test_deadlock
+
+# Build rule for target.
+test_deadlock: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_deadlock
+.PHONY : test_deadlock
+
+# fast build rule for target.
+test_deadlock/fast:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_deadlock.dir/build.make test/CMakeFiles/test_deadlock.dir/build
+.PHONY : test_deadlock/fast
+
+#=============================================================================
 # Target rules for targets named test_empty
 
 # Build rule for target.
@@ -277,6 +290,19 @@ test_empty: cmake_check_build_system
 test_empty/fast:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_empty.dir/build.make test/CMakeFiles/test_empty.dir/build
 .PHONY : test_empty/fast
+
+#=============================================================================
+# Target rules for targets named test_queue
+
+# Build rule for target.
+test_queue: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_queue
+.PHONY : test_queue
+
+# fast build rule for target.
+test_queue/fast:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/build
+.PHONY : test_queue/fast
 
 cacti.o: cacti.c.o
 
@@ -431,8 +457,10 @@ help:
 	@echo "... macierz"
 	@echo "... silnia"
 	@echo "... simple"
+	@echo "... test_deadlock"
 	@echo "... test_empty"
 	@echo "... test_janek"
+	@echo "... test_queue"
 	@echo "... cacti.o"
 	@echo "... cacti.i"
 	@echo "... cacti.s"
