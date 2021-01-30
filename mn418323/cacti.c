@@ -5,10 +5,9 @@
 #include "err.h"
 #include <stdbool.h>
 #include <signal.h>
-#include <threads.h>
 
 #define RESIZE_MULTPIER 2
-#define INITIAL_ACTORS_SIZE 1000
+#define INITIAL_ACTORS_SIZE 3
 #define INITIAL_MESSAGES_QUEUE_SIZE 1024
 #define ACTOR_SIZE sizeof(actor_t)
 
@@ -18,7 +17,7 @@
 
 bool debug = false;
 
-thread_local actor_id_t curr_id;
+_Thread_local actor_id_t curr_id;
 
 bool joined = false;
 
@@ -118,12 +117,13 @@ pthread_cond_t join_cond;
 
 
 static void clean_actors() {
-    printf("Destroying system, actors.count = %d, actors.dead\n", actors.count, actors.count_dead);
+    // printf("Destroying system, actors.count = %d, actors.dead\n", actors.count, actors.count_dead);
     for (size_t i = 0; i < actors.count; i++) {
         queue_destruct(actors.vec[i]->messages);
 
-        if (actors.vec[i]->state != NULL)
-            free(actors.vec[i]->state);
+//        if (actors.vec[i]->state != NULL)
+//            free(actors.vec[i]->state); // TODO czy zwalniamy stateptr (wygląda na to, że nie)
+
         free(actors.vec[i]);
     }
     free(actors.vec);
@@ -170,7 +170,7 @@ void tpool_wait() {
 
 void tpool_destroy() {
     // if (debug)
-    printf("%d: będę kończył program!\n", pthread_self() % 100);
+    // printf("%d: będę kończył program!\n", pthread_self() % 100);
     if (tm == NULL)
         return;
 
@@ -193,7 +193,7 @@ void tpool_destroy() {
 
 void actor_system_join(actor_id_t actor) {
     // exit(1);
-    printf("JOIN WYWOLANE: %d\n", pthread_self());
+    // printf("JOIN WYWOLANE: %d\n", pthread_self());
     if (actors.dead)
         return;
 
@@ -216,7 +216,7 @@ void actor_system_join(actor_id_t actor) {
     pthread_mutex_destroy(&join_mutex);
 
     destroy_system();
-
+    // TODO kolejka aktorów to mogą być po prostu inty;
 }
 
 // Executes work in the treadpool thats pointed by arg.
@@ -415,7 +415,6 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
             .data = NULL
     };
     send_message(act->actor_id, hello);
-
     return 0;
 }
 
@@ -445,6 +444,7 @@ void run_message(actor_t *actor, message_t *msg) {
         lock_mutex(&(actor->mutex));
         actor->is_dead = true;
         actors.count_dead++;
+
         if (debug) {
             size_t debug_ile = actors.count_dead;
             char s[100];

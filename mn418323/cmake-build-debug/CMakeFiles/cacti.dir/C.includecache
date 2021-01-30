@@ -21,8 +21,6 @@ stdbool.h
 -
 signal.h
 -
-threads.h
--
 
 /home/mateusz/PW/projekt-C/mn418323/cacti.h
 stddef.h
