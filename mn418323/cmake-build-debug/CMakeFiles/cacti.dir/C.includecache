@@ -26,18 +26,6 @@ signal.h
 stddef.h
 -
 
-/home/mateusz/PW/projekt-C/mn418323/err.c
-stdio.h
--
-stdlib.h
--
-stdarg.h
--
-string.h
--
-err.h
-/home/mateusz/PW/projekt-C/mn418323/err.h
-
 /home/mateusz/PW/projekt-C/mn418323/err.h
 
 /home/mateusz/PW/projekt-C/mn418323/queue.h

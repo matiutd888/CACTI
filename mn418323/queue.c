@@ -134,7 +134,7 @@ size_t queue_size(queue_t *q) {
 
 void print_queue(queue_t *q) {
     for (int i = 0; i < q->count; ++i) {
-        printf("%d -> ", *(int *)q->arr[(q->read + i) % (q->size)]);
+        printf("%d -> ", *(int *) q->arr[(q->read + i) % (q->size)]);
     }
     printf("\n");
 }

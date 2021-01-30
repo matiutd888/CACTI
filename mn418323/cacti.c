@@ -26,37 +26,44 @@ _Thread_local actor_id_t curr_id;
 
 static bool joined = false;
 
-void lock_mutex(pthread_mutex_t *mtx) {
+static void lock_mutex(pthread_mutex_t *mtx) {
     int result = pthread_mutex_lock(mtx);
     if (result != 0) {
         syserr(result, "Mutex lock error!");
     }
 }
 
-void unlock_mutex(pthread_mutex_t *mtx) {
+static void unlock_mutex(pthread_mutex_t *mtx) {
     int result = pthread_mutex_unlock(mtx);
     if (result != 0)
         syserr(result, "Mutex unlock error!");
 }
 
-void cond_wait(pthread_cond_t *cond, pthread_mutex_t *mtx) {
+static void cond_wait(pthread_cond_t *cond, pthread_mutex_t *mtx) {
     int result = pthread_cond_wait(cond, mtx);
     if (result != 0)
         syserr(result, "Condition wait error");
 }
 
-void cond_broadcast(pthread_cond_t *cond) {
+static void cond_broadcast(pthread_cond_t *cond) {
     int result = pthread_cond_broadcast(cond);
     if (result != 0)
         syserr(result, "Condition broadcast error");
 }
 
-void cond_signal(pthread_cond_t *cond) {
+static void cond_signal(pthread_cond_t *cond) {
     int result = pthread_cond_broadcast(cond);
     if (result != 0)
         syserr(result, "Condition signal error");
 }
 
+static void* safe_malloc(size_t size) {
+    void *d = NULL;
+    d = malloc(size);
+    if (d == NULL)
+        syserr(1, "Memory alloc failed!\n");
+    return d;
+}
 typedef struct actor_struct {
     role_t role;
     actor_id_t actor_id;
@@ -67,11 +74,6 @@ typedef struct actor_struct {
     bool working;
     void *state;
 } actor_t;
-
-void terminate() {
-
-    exit(1);
-}
 
 typedef struct actors_vec {
     actor_t **vec;
@@ -158,7 +160,7 @@ static void resize_actors() {
     actors.size = actors.size * RESIZE_MULTPIER + 1;
     actors.vec = realloc(actors.vec, sizeof(actor_t *) * actors.size);
     if (actors.vec == NULL)
-        terminate();
+        exit(1);
 
     for (size_t i = actors.count; i < actors.size; i++)
         actors.vec[i] = NULL;
@@ -167,7 +169,7 @@ static void resize_actors() {
 static void add_actor(actor_t *actor) {
     if (actors.count == CAST_LIMIT) {
         fprintf(stderr, "Too many actors!");
-        terminate();
+        exit(1);
     }
 
     if (actors.count == actors.size)
@@ -180,7 +182,7 @@ static void add_actor(actor_t *actor) {
 static actor_t *new_actor(role_t *role) {
     actor_id_t new_id = actors.count;
     actor_t *new_act = NULL;
-    new_act = malloc(ACTOR_SIZE);
+    new_act = safe_malloc(ACTOR_SIZE);
     if (new_act == NULL)
         syserr(1, "Nie udało s zaalokować pamięci na aktora");
 
@@ -219,7 +221,7 @@ static tpool_t *tpool_create() {
     tpool_t *t;
     size_t i;
     t = NULL;
-    t = malloc(sizeof(tpool_t));
+    t = safe_malloc(sizeof(tpool_t));
     if (t == NULL)
         return NULL;
 
@@ -265,7 +267,7 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
     tpool = tpool_create();
 
     if (tpool == NULL) {
-        terminate();
+        exit(1);
     }
 
     actor_t *act = new_actor(role);
@@ -365,7 +367,7 @@ static void tpool_execute_messages(actor_id_t id) {
     lock_mutex(&mutex);
     lock_mutex(&actor->mutex);
     if (actor->has_messages) {
-        actor_id_t *work_id = malloc(sizeof(actor_id_t));
+        actor_id_t *work_id = safe_malloc(sizeof(actor_id_t));
         *work_id = id;
         queue_push(tpool->q, work_id);
         tpool_add_notify();
@@ -425,7 +427,7 @@ static void *tpool_worker() {
 
 static message_t *create_message(message_t message) {
     message_t *ret = NULL;
-    ret = malloc(sizeof(message));
+    ret = safe_malloc(sizeof(message));
     if (ret == NULL)
         return ret;
     ret->nbytes = message.nbytes;
@@ -479,7 +481,7 @@ int send_message(actor_id_t id, message_t message) {
                        pthread_self() % 100,
                        id,
                        queue_size(act->messages));
-            work_id = malloc(sizeof(actor_id_t));
+            work_id = safe_malloc(sizeof(actor_id_t));
             *work_id = id;
             queue_push(tpool->q, work_id);
             tpool_add_notify();
