@@ -153,9 +153,25 @@ void calculate(void **stateptr, size_t size, void *data) {
                 .data = r,
                 .message_type = MSG_CALCULATE
         };
-        send_message(act->next, calculate);
+        actor_id_t next = act->next;
+        send_message(next, calculate);
+        if (r->row == act->k - 1) {
+            free(*stateptr);
+            message_t godie = {
+                    .message_type = MSG_GODIE,
+            };
+            send_message(actor_id_self(), godie);
+        }
     } else {
         printf("KONIEC WIERSZA %d, suma = %d\n", r->row, r->sum);
+        if (r->row == act->k - 1) {
+            free(*stateptr);
+            message_t godie = {
+                    .message_type = MSG_GODIE,
+            };
+            send_message(actor_id_self(), godie);
+        }
+        free(r);
     }
 }
 
@@ -175,7 +191,6 @@ void calculate_all(void **statpeptr, size_t size, void *data) {
 }
 
 int main() {
-
     scanf("%d", &k);
     scanf("%d", &n);
     printf("%d %d\n", k, n);
@@ -212,4 +227,10 @@ int main() {
 
     send_message(origin, msg);
     actor_system_join(origin);
+    for (int i = 0; i < n; ++i) {
+        free(macierz[i]);
+        free(milisec[i]);
+    }
+    free(macierz);
+    free(milisec);
 }
