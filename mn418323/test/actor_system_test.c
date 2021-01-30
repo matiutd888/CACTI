@@ -5,7 +5,7 @@
 #include <assert.h>
 #include "../cacti.h"
 
-#define NO_INCREMENTS 5
+#define NO_INCREMENTS 1000
 
 int x=1;
 

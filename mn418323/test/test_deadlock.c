@@ -2,7 +2,6 @@
 // Created by bartosz on 30.01.2021.
 //
 
-#include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>

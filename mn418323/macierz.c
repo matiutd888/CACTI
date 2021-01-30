@@ -59,7 +59,6 @@ typedef struct row_info {
 
 void hello(void **stateptr, size_t size, void *data) {
     UNUSED(size);
-    // printf("HELLO I am %ld and my father is %ld\n", actor_id_self(), data);
     *stateptr = malloc(ACTOR_SIZE);
     message_t get_son = {
             .message_type = MSG_SON,
@@ -78,7 +77,6 @@ void get_son_id(void **stateptr, size_t size, void *data) {
     UNUSED(size);
     actor *act = *stateptr;
     act->next = (actor_id_t) data;
-    // printf("SON I am %ld and my son is %ld\n", actor_id_self(), act->next);
     message_t spawn_son = {
             .message_type = MSG_SAVE_COLUMN_AND_SPAWN,
             .data = *stateptr
@@ -98,7 +96,6 @@ void save_col_and_spawn(void **stateptr, size_t size, void *data) {
     act->n = father->n;
     act->k = father->k;
     act->origin = father->origin;
-    // printf("SPAWN, i am %ld and i am %dth, my origin is %ld\n", actor_id_self(), act->col, act->origin);
     if (act->col < father->n - 1) {
         message_t spawn = {
                 .message_type = MSG_SPAWN,
@@ -106,7 +103,6 @@ void save_col_and_spawn(void **stateptr, size_t size, void *data) {
         };
         send_message(actor_id_self(), spawn);
     } else {
-        // printf("Wywołuję calculate all!\n");
         message_t calc_all = {
                 .message_type = MSG_CALCULATE_ALL
         };
@@ -139,7 +135,7 @@ void calculate(void **stateptr, size_t size, void *data) {
     row_t *r = data;
     actor *act = *stateptr;
     r->sum += act->macierz[r->row][act->col];
-    // printf("Jestem kolumna %d obliczam wiersz %d, którego suma wynosi %d\n", act->col, r->row, r->sum);
+
     usleep(act->milisec[r->row][act->col]);
     if (act->col + 1 < act->n) {
         message_t calculate = {
@@ -193,7 +189,6 @@ int main() {
 
     scanf("%d", &k);
     scanf("%d", &n);
-    // printf("%d %d\n", k, n);
 
     macierz = malloc(sizeof(element_t *) * k);
     milisec = malloc(sizeof(int *) * k);
@@ -205,13 +200,6 @@ int main() {
             scanf("%d", &(milisec[i][j]));
         }
     }
-
-//    for (int i = 0; i < k; ++i) {
-//        for (int j = 0; j < n; ++j) {
-//            printf("%d ", macierz[i][j]);
-//        }
-//        printf("\n");
-//    }
 
     actor_id_t origin;
     actor_system_create(&origin, &role_father);

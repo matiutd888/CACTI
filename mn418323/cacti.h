@@ -18,7 +18,7 @@ typedef long message_type_t;
 #endif
 // 1048576
 #ifndef POOL_SIZE
-#define POOL_SIZE 3
+#define POOL_SIZE 6
 #endif
 
 typedef struct message

@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
 #include "cacti.h"
+
+#define UNUSED(x) (void)(x)
 
 #define MSG_SON 1
 #define MSG_FACT 2
@@ -35,6 +35,7 @@ role_t role_origin = {
         .nprompts = 4
 };
 void get_son_id(void **stateptr, size_t size, void *data) {
+    UNUSED(size);
     fact_t *przekazywane = *stateptr;
     przekazywane->k++;
     przekazywane->k_fact *= przekazywane->k;
@@ -44,7 +45,7 @@ void get_son_id(void **stateptr, size_t size, void *data) {
             .data = przekazywane
     };
 
-    send_message(data, spawn_son);
+    send_message((actor_id_t) data, spawn_son);
     message_t godie = {
             .message_type = MSG_GODIE,
     };
@@ -52,6 +53,7 @@ void get_son_id(void **stateptr, size_t size, void *data) {
 }
 
 void save_col_and_spawn(void **stateptr, size_t size, void *data) {
+    UNUSED(size);
     fact_t *f = data;
     *stateptr = data;
     if (f->k == f->stop) {
@@ -71,10 +73,14 @@ void save_col_and_spawn(void **stateptr, size_t size, void *data) {
 }
 
 void hello_origin(void **stateptr, size_t size, void *data) {
-
+    UNUSED(stateptr);
+    UNUSED(size);
+    UNUSED(data);
 }
 
 void hello(void **stateptr, size_t size, void *data) {
+    UNUSED(size);
+    UNUSED(stateptr);
     message_t get_son = {
             .message_type = MSG_SON,
             .data = actor_id_self()
@@ -83,6 +89,8 @@ void hello(void **stateptr, size_t size, void *data) {
 }
 
 void calculate(void **stateptr, size_t size, void *data) {
+    UNUSED(size);
+
     fact_t *fact_info = data;
     fact_info->k = 1;
     fact_info->k_fact = 1;
