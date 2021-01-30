@@ -88,7 +88,7 @@ actor_vec_t actors = {
         .size = 0,
         .count_dead = 0,
         .dead = true,
-        .signaled = false};
+        .signaled = false };
 
 pthread_mutex_t mutex;
 // struct sigaction action;
@@ -108,8 +108,7 @@ struct tpool {
 typedef struct tpool tpool_t;
 
 tpool_t *tm;
-
-//--------------------------------------------------------------
+pthread_t threads[POOL_SIZE];
 
 pthread_cond_t join_cond;
 
@@ -179,19 +178,14 @@ void tpool_destroy() {
     actors.dead = true;
 
     if (!joined) {
-        // Joined thread will clean thee
         destroy_system();
     } else {
         cond_broadcast(&(join_cond));
     }
-    pthread_exit(NULL);
 }
 
 
-
 void actor_system_join(actor_id_t actor) {
-    // exit(1);
-    // printf("JOIN WYWOLANE: %d\n", pthread_self());
     if (actors.dead)
         return;
     lock_mutex(&mutex);
@@ -202,79 +196,27 @@ void actor_system_join(actor_id_t actor) {
     }
     pthread_cond_destroy(&join_cond);
     komunikat("koniec czekania na wątki");
+    for (int i = 0; i < POOL_SIZE; ++i) {
+        pthread_join(threads[i], NULL);
+    }
     unlock_mutex(&mutex);
     destroy_system();
     // TODO kolejka aktorów to mogą być po prostu inty;
 }
 
 // Executes work in the treadpool thats pointed by arg.
-static void *tpool_worker() {
-    actor_id_t *id;
+static void *tpool_worker();
 
-    while (1) {
-        lock_mutex(&(mutex));
-        if (debug)
-            printf("%d: Actors count = %d, Actors dead == %d, tm.queue.size() = %d\n",
-                   pthread_self() % 100, actors.count, actors.count_dead, queue_size(tm->q));
-
-        while (queue_empty(tm->q) && !tm->stop) {
-            if (queue_empty(tm->q) && (actors.count_dead == actors.count || actors.signaled)) {
-                if (debug) printf("%d: Zauważyłem, że to koniec!\n", pthread_self() % 100);
-                tm->stop = true; // TODO obsługa GODIE
-                tm->thread_cnt--;
-                tpool_destroy(); // TODO dealloc actors;
-                return NULL;
-            }
-            cond_wait(&(tm->work_cond), &(mutex));
-        }
-
-        if (tm->stop) {
-            break;
-        }
-
-        id = tpool_id_get();
-        tm->working_cnt++;
-        unlock_mutex(&(mutex));
-
-        if (id != NULL) {
-            if (debug) printf("%d: Mam jakąś pracę! aktorID = %d\n", pthread_self() % 100, *id);
-            tpool_execute_messages(*id);
-            free(id);
-        }
-
-        lock_mutex(&(mutex));
-        tm->working_cnt--;
-
-        if (!tm->stop && tm->working_cnt == 0 && queue_empty(tm->q)) // TODO o co w sumie z tym chodzi
-            cond_signal(&(tm->working_cond));
-        unlock_mutex(&(mutex));
-    }
-    tm->thread_cnt--;
-    cond_signal(&(tm->working_cond));
-    unlock_mutex(&(mutex));
-    if (debug) printf("%d: Koniec procesu %d\n", pthread_self() % 100, tm->thread_cnt);
-    return NULL;
-}
-
-actor_id_t actor_id_self() {
-    return curr_id;
-}
-
-tpool_t *tpool_create(size_t num) {
+tpool_t *tpool_create() {
 
     tpool_t *t;
-
     size_t i;
-
-    if (num == 0)
-        num = 2;
-
     t = NULL;
     t = malloc(sizeof(tpool_t));
     if (t == NULL)
         return NULL;
 
-    t->thread_cnt = num;
+    t->thread_cnt = POOL_SIZE;
     t->stop = false;
     t->working_cnt = 0;
 
@@ -285,14 +227,16 @@ tpool_t *tpool_create(size_t num) {
 
     t->q = queue_init(INITIAL_ACTORS_SIZE);
 
-    for (i = 0; i < num; i++) {
-        pthread_t thread;
-        if (pthread_create(&thread, NULL, tpool_worker, t) != 0)
+    for (i = 0; i < POOL_SIZE; i++) {
+        if (pthread_create(&(threads[i]), NULL, tpool_worker, t) != 0)
             exit(1);
-        pthread_detach(thread);
     }
 
     return t;
+}
+
+actor_id_t actor_id_self() {
+    return curr_id;
 }
 
 bool tpool_add_notify() {
@@ -422,7 +366,6 @@ void run_spawn(actor_t *actor, message_t *msg) {
 }
 
 void run_message(actor_t *actor, message_t *msg) {
-    // TODO check msg type
     if (msg->message_type == MSG_SPAWN) {
         run_spawn(actor, msg);
         return;
@@ -433,37 +376,25 @@ void run_message(actor_t *actor, message_t *msg) {
         actor->is_dead = true;
         actors.count_dead++;
 
-        if (debug) {
-            size_t debug_ile = actors.count_dead;
-            char s[100];
-            sprintf("GODIE !!!!! actors count = %d\n", actors.count_dead, s);
-            komunikat(s);
-        }
         unlock_mutex(&(actor->mutex));
         unlock_mutex(&mutex);
         return;
     }
 
     actor->role.prompts[msg->message_type](&(actor->state), msg->nbytes, msg->data);
-    // TODO czy message mogę zwolnić w tym miejscu
 }
 
 void free_msg(message_t *msg) {
-    // free(msg->data); TODO czy to zwalniać?
     free(msg);
 }
 
 void tpool_execute_messages(actor_id_t id) {
-//    actor_vec_t *actors_copy = &actors;
-//    tpool_t *tpool_copy = &tm;
-
     curr_id = id;
     lock_mutex(&mutex);
     if (actors.count <= id)
         syserr(1, "Execute messages: wrong actor id\n");
     actor_t *actor = actors.vec[id];
     unlock_mutex(&mutex);
-    // TODO Lub zwykły mutex
     lock_mutex(&(actor->mutex));
 
     actor->has_messages = false;
@@ -471,20 +402,16 @@ void tpool_execute_messages(actor_id_t id) {
 
     queue_t *message_q = actor->messages;
     size_t messages_count = queue_size(message_q);
-    if (debug)
-        printf("%d: Aktor %d ma %d wiadomości\n", pthread_self() % 100, actor->actor_id, messages_count);
 
     unlock_mutex(&(actor->mutex));
 
     while (messages_count > 0) {
-        // Wzięcie se mutexa
         lock_mutex(&(actor->mutex));
 
         message_t *msg = queue_pop(message_q);
-        //Zwolnienie mutexa
+
         unlock_mutex(&(actor->mutex));
 
-        if (debug) printf("%d: Obsługuję wiadomość %d\n", pthread_self() % 100, msg->message_type);
         run_message(actor, msg);
         free_msg(msg);
         messages_count--;
@@ -493,26 +420,62 @@ void tpool_execute_messages(actor_id_t id) {
     lock_mutex(&mutex);
     lock_mutex(&actor->mutex);
     if (actor->has_messages) {
-//        printf("%d : (2) Dodaję na kolejkę aktora %d, który ma w tym momencie %d wiadomości\n",
-//               pthread_self() % 100,
-//               id,
-//               queue_size(actor->messages));
         actor_id_t *work_id = malloc(sizeof(actor_id_t));
         *work_id = id;
         queue_push(tm->q, work_id);
         tpool_add_notify();
-    } else {
-//        printf("%d : (2) Aktor %d ma w tym momencie %d wiadomości, ale go nie dodaję!\n",
-//               pthread_self() % 100,
-//               id,
-//               queue_size(actor->messages));
     }
     actor->working = false;
-    if (debug)
-        printf("%d: Skończyłem! actor %d ma %d wiadomości\n", pthread_self() % 100, actor->actor_id,
-               queue_size(actor->messages));
     unlock_mutex(&actor->mutex);
     unlock_mutex(&mutex);
+}
+
+void *tpool_worker() {
+    actor_id_t *id;
+
+    while (1) {
+        lock_mutex(&(mutex));
+        if (debug)
+            printf("%d: Actors count = %d, Actors dead == %d, tm.queue.size() = %d\n",
+                   pthread_self() % 100, actors.count, actors.count_dead, queue_size(tm->q));
+
+        while (queue_empty(tm->q) && !tm->stop) {
+            if (queue_empty(tm->q) && (actors.count_dead == actors.count || actors.signaled)) {
+                if (debug) printf("%d: Zauważyłem, że to koniec!\n", pthread_self() % 100);
+                tm->stop = true; // TODO obsługa GODIE
+                tm->thread_cnt--;
+                tpool_destroy(); // TODO dealloc actors;
+                return NULL;
+            }
+            cond_wait(&(tm->work_cond), &(mutex));
+        }
+
+        if (tm->stop) {
+            break;
+        }
+
+        id = tpool_id_get();
+        tm->working_cnt++;
+        unlock_mutex(&(mutex));
+
+        if (id != NULL) {
+            if (debug) printf("%d: Mam jakąś pracę! aktorID = %d\n", pthread_self() % 100, *id);
+            tpool_execute_messages(*id);
+            free(id);
+        }
+
+        lock_mutex(&(mutex));
+        tm->working_cnt--;
+
+        if (!tm->stop && tm->working_cnt == 0 && queue_empty(tm->q)) // TODO o co w sumie z tym chodzi
+            cond_signal(&(tm->working_cond));
+        unlock_mutex(&(mutex));
+    }
+    tm->thread_cnt--;
+    cond_signal(&(tm->working_cond));
+    unlock_mutex(&(mutex));
+    if (debug) printf("%d: Koniec procesu %d\n", pthread_self() % 100, tm->thread_cnt);
+    return NULL;
 }
 
 message_t *create_message(message_t message) {
