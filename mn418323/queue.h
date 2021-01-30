@@ -2,6 +2,9 @@
 #define QUEUE_H
 
 #include <stdlib.h>
+// Queue implemented as dynamic cyclic array of pointers.
+// Propably woud've be implemented as dynamic array of
+// actor_id_t, but i thought, that dynamic array of messages is also nessesary.
 
 typedef struct m_queue queue_t;
 

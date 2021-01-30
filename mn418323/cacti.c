@@ -284,12 +284,12 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
     unlock_mutex(&mutex);
 
     // Wysyłanie message hello
-    message_t hello = {
-            .message_type = MSG_HELLO,
-            .nbytes = 0,
-            .data = NULL
-    };
-    send_message(act->actor_id, hello);
+//    message_t hello = {
+//            .message_type = MSG_HELLO,
+//            .nbytes = 0,
+//            .data = NULL
+//    };
+//    send_message(act->actor_id, hello);
     return 0;
 }
 
@@ -526,6 +526,8 @@ static void tpool_destroy() {
     actors.dead = true;
 
     if (!joined) {
+        for (int i = 0; i < POOL_SIZE; ++i)
+            pthread_detach(threads[i]);
         destroy_system();
     } else {
         cond_broadcast(&(join_cond));

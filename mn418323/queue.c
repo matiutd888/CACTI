@@ -4,18 +4,13 @@
 #include <stdio.h>
 
 #define ELEMENT_SIZE sizeof(void *)
-
-#define RESIZE_MULTIPLIER 2     /**< Współczynnik, o jaki zwiększany jest
-                                 * maksymalny rozmiar stosu, gdy stos się zapełni.
-                                 */
-#define EXIT_CODE_MALLOC_FAIL 1 /**< Kod wyjściowy programu,
-                                 * gdy nie uda się zaalokować potrzebnej pamięci.
-                                 */
+#define RESIZE_MULTIPLIER 2
+#define EXIT_CODE_MALLOC_FAIL 1
 
 struct m_queue {
     size_t write, read;
-    void **arr;   ///< Dynamiczna tablica przechowująca elementy na stosie.
-    size_t size;  ///< Maksymalny rozmiar stosu.
+    void **arr;
+    size_t size;
     size_t count;
 };
 
