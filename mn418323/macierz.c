@@ -136,7 +136,6 @@ void calculate(void **stateptr, size_t size, void *data) {
     row_t *r = data;
     actor *act = *stateptr;
     r->sum += act->macierz[r->row][act->col];
-    // printf("CALCULATE jestem %ld liczę wiersz %d który ma sumę %ld\n", act->col, r->row, r->sum);
     usleep(act->milisec[r->row][act->col] * 1000);
     if (act->col + 1 < act->n) {
         message_t calculate = {
@@ -168,7 +167,6 @@ void calculate(void **stateptr, size_t size, void *data) {
 void calculate_all(void **stateptr, size_t size, void *data) {
     UNUSED(size);
     UNUSED(data);
-    // printf("Wywołano calculate all!\n");
     actor *act = *stateptr;
     for (int i = 0; i < act->k; ++i) {
         row_t *row = malloc(sizeof(row_t));
@@ -201,8 +199,6 @@ int main() {
             scanf("%d", &(milisec[i][j]));
         }
     }
-
-    // printf("Dupa\n");
 
     actor_id_t origin;
     actor_system_create(&origin, &role_father);
