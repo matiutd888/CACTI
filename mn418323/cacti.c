@@ -57,13 +57,14 @@ static void cond_signal(pthread_cond_t *cond) {
         syserr(result, "Condition signal error");
 }
 
-static void* safe_malloc(size_t size) {
+static void *safe_malloc(size_t size) {
     void *d = NULL;
     d = malloc(size);
     if (d == NULL)
         syserr(1, "Memory alloc failed!\n");
     return d;
 }
+
 typedef struct actor_struct {
     role_t role;
     actor_id_t *actor_id;
@@ -93,8 +94,17 @@ static actor_vec_t actors = {
         .signaled = false};
 
 static pthread_mutex_t mutex;
-// struct sigaction action;
-// sigset_t block_mask;
+
+void catch(int sig) {
+    actors.signaled = true;
+    printf("Otrzymano signal!\n", sig);
+    if (sig != SIGINT) {
+        syserr(0, "Błąd obsługi sygnałów");
+    }
+}
+
+sigset_t block_mask; // TODO oddać maskę
+struct sigaction action;
 
 struct tpool {
     queue_t *q;
@@ -105,13 +115,12 @@ struct tpool {
     bool stop;
 };
 
-
 typedef struct tpool tpool_t;
-
 static tpool_t *tpool;
 static pthread_t threads[POOL_SIZE];
-static pthread_cond_t join_cond;
 
+
+static pthread_cond_t join_cond;
 
 // Helper methods
 
@@ -180,6 +189,7 @@ static void add_actor(actor_t *actor) {
     actors.count++;
 }
 
+
 static actor_t *new_actor(role_t *role) {
     actor_id_t new_id = actors.count;
     actor_t *new_act = NULL;
@@ -202,25 +212,12 @@ static actor_t *new_actor(role_t *role) {
     return new_act;
 }
 
-
 actor_id_t actor_id_self() {
     return curr_id;
 }
 
-//void catch(int sig) {
-
-//}
-//    unlock_mutex(&mutex);
-//    actors.signaled = true;
-//    lock_mutex(&mutex);
-//        syserr(0, "Błąd obsługi sygnałów");
-//    if (sig != SIGINT)
-//    printf("Otrzymano signal!\n");
-
-
 
 static tpool_t *tpool_create() {
-
     tpool_t *t;
     size_t i;
     t = NULL;
@@ -257,9 +254,8 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
     lock_mutex(&mutex);
     actors.vec = calloc(INITIAL_ACTORS_SIZE, sizeof(actor_t *));
     actors.size = INITIAL_ACTORS_SIZE;
-    for (size_t i = 0; i < actors.size; i++) {
+    for (size_t i = 0; i < actors.size; i++)
         actors.vec[i] = NULL;
-    }
 
     joined = false;
     actors.count = 0;
@@ -278,21 +274,24 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
 
     *actor = *(act->actor_id);
 
-//    sigemptyset(&block_mask);
-//    sigaddset(&block_mask, SIGINT);
-//    action.sa_flags = 0;
-//    action.sa_mask = block_mask;
-//    action.sa_handler = catch;
+    sigemptyset(&block_mask);
+    sigaddset(&block_mask, SIGINT);
+
+    sigprocmask(SIG_BLOCK, &block_mask, NULL);
+
+    action.sa_flags = 0;
+    action.sa_mask = block_mask;
+    action.sa_handler = catch;
 
     unlock_mutex(&mutex);
 
     // Wysyłanie message hello
-//    message_t hello = {
-//            .message_type = MSG_HELLO,
-//            .nbytes = 0,
-//            .data = NULL
-//    };
-//    send_message(act->actor_id, hello);
+    message_t hello = {
+            .message_type = MSG_HELLO,
+            .nbytes = 0,
+            .data = NULL
+    };
+    send_message(act->actor_id, hello);
     return 0;
 }
 
@@ -301,6 +300,9 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
 // Messages handling
 
 static void run_spawn(actor_t *actor, message_t *msg) {
+    if (actors.signaled)
+        return;
+
     role_t *role = msg->data;
 
     lock_mutex(&mutex);
@@ -377,8 +379,10 @@ static void tpool_execute_messages(actor_id_t id) {
 }
 
 static void *tpool_worker() {
-    actor_id_t *id;
 
+    sigaction(SIGINT, &action, 0);
+
+    actor_id_t *id = NULL;
     while (1) {
         lock_mutex(&(mutex));
         if (debug)
@@ -447,7 +451,7 @@ int send_message(actor_id_t id, message_t message) {
     actor_t *act = actors.vec[id];
     lock_mutex(&(act->mutex));
 
-    if (act->is_dead) {
+    if (act->is_dead || actors.signaled) {
         unlock_mutex(&(act->mutex));
         unlock_mutex(&(mutex));
         return ACTOR_IS_DEAD;
@@ -531,6 +535,9 @@ static void tpool_destroy() {
 }
 
 void actor_system_join(actor_id_t actor) {
+    if (actor >= actors.count)
+        syserr(1, "Brak aktora %ld w systemie!", actor);
+
     if (actors.dead)
         return;
     lock_mutex(&mutex);
