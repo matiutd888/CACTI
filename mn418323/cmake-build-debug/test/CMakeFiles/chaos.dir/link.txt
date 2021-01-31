@@ -1,1 +1,0 @@
-/usr/bin/c++  -g -Wall -Wextra -pthread -g   CMakeFiles/chaos.dir/chaos.cpp.o  -o chaos  ../libcacti.a 

@@ -1,3 +1,0 @@
-/home/mateusz/PW/projekt-C/mn418323/test/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/mateusz/PW/projekt-C/mn418323/test/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/mateusz/PW/projekt-C/mn418323/test/cmake-build-debug/CMakeFiles/test_empty.dir

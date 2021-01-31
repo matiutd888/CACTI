@@ -1,1 +1,0 @@
-/usr/bin/cc -g   CMakeFiles/test_janek.dir/cacti.c.o CMakeFiles/test_janek.dir/actor_system_test.c.o CMakeFiles/test_janek.dir/err.c.o CMakeFiles/test_janek.dir/queue.c.o  -o test_janek 
