@@ -64,7 +64,7 @@ int main(){
     };
 
     actor_id_t actorId;
-  //  actor_system_create(&actorId, &role);
+   actor_system_create(&actorId, &role);
 
     send_message(actorId, msgSpawn);
     send_message(actorId, msgSpawn);

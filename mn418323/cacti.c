@@ -524,8 +524,6 @@ static void tpool_destroy() {
     actors.dead = true;
 
     if (!joined) {
-        for (int i = 0; i < POOL_SIZE; ++i)
-            pthread_detach(threads[i]);
         destroy_system();
     } else {
         cond_broadcast(&(join_cond));
