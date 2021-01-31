@@ -103,6 +103,7 @@ void catch(int sig) {
     }
 }
 
+
 sigset_t block_mask; // TODO oddać maskę
 struct sigaction action;
 
