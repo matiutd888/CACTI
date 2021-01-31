@@ -207,30 +207,30 @@ cacti/fast:
 .PHONY : cacti/fast
 
 #=============================================================================
-# Target rules for targets named test_empty
+# Target rules for targets named chaos
 
 # Build rule for target.
-test_empty: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_empty
-.PHONY : test_empty
+chaos: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 chaos
+.PHONY : chaos
 
 # fast build rule for target.
-test_empty/fast:
-	$(MAKE) -f test/CMakeFiles/test_empty.dir/build.make test/CMakeFiles/test_empty.dir/build
-.PHONY : test_empty/fast
+chaos/fast:
+	$(MAKE) -f test/CMakeFiles/chaos.dir/build.make test/CMakeFiles/chaos.dir/build
+.PHONY : chaos/fast
 
 #=============================================================================
-# Target rules for targets named test_janek
+# Target rules for targets named test_signal
 
 # Build rule for target.
-test_janek: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_janek
-.PHONY : test_janek
+test_signal: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_signal
+.PHONY : test_signal
 
 # fast build rule for target.
-test_janek/fast:
-	$(MAKE) -f test/CMakeFiles/test_janek.dir/build.make test/CMakeFiles/test_janek.dir/build
-.PHONY : test_janek/fast
+test_signal/fast:
+	$(MAKE) -f test/CMakeFiles/test_signal.dir/build.make test/CMakeFiles/test_signal.dir/build
+.PHONY : test_signal/fast
 
 #=============================================================================
 # Target rules for targets named test_deadlock
@@ -259,43 +259,30 @@ simple/fast:
 .PHONY : simple/fast
 
 #=============================================================================
-# Target rules for targets named test_queue
+# Target rules for targets named test_janek
 
 # Build rule for target.
-test_queue: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_queue
-.PHONY : test_queue
+test_janek: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_janek
+.PHONY : test_janek
 
 # fast build rule for target.
-test_queue/fast:
-	$(MAKE) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/build
-.PHONY : test_queue/fast
+test_janek/fast:
+	$(MAKE) -f test/CMakeFiles/test_janek.dir/build.make test/CMakeFiles/test_janek.dir/build
+.PHONY : test_janek/fast
 
 #=============================================================================
-# Target rules for targets named test_signal
+# Target rules for targets named test_empty
 
 # Build rule for target.
-test_signal: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_signal
-.PHONY : test_signal
+test_empty: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_empty
+.PHONY : test_empty
 
 # fast build rule for target.
-test_signal/fast:
-	$(MAKE) -f test/CMakeFiles/test_signal.dir/build.make test/CMakeFiles/test_signal.dir/build
-.PHONY : test_signal/fast
-
-#=============================================================================
-# Target rules for targets named chaos
-
-# Build rule for target.
-chaos: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 chaos
-.PHONY : chaos
-
-# fast build rule for target.
-chaos/fast:
-	$(MAKE) -f test/CMakeFiles/chaos.dir/build.make test/CMakeFiles/chaos.dir/build
-.PHONY : chaos/fast
+test_empty/fast:
+	$(MAKE) -f test/CMakeFiles/test_empty.dir/build.make test/CMakeFiles/test_empty.dir/build
+.PHONY : test_empty/fast
 
 cacti.o: cacti.c.o
 
@@ -448,13 +435,12 @@ help:
 	@echo "... silnia"
 	@echo "... macierz"
 	@echo "... cacti"
-	@echo "... test_empty"
-	@echo "... test_janek"
+	@echo "... chaos"
+	@echo "... test_signal"
 	@echo "... test_deadlock"
 	@echo "... simple"
-	@echo "... test_queue"
-	@echo "... test_signal"
-	@echo "... chaos"
+	@echo "... test_janek"
+	@echo "... test_empty"
 	@echo "... cacti.o"
 	@echo "... cacti.i"
 	@echo "... cacti.s"

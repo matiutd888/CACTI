@@ -83,9 +83,9 @@ void hello(void **stateptr, size_t size, void *data) {
     UNUSED(stateptr);
     message_t get_son = {
             .message_type = MSG_SON,
-            .data = actor_id_self()
+            .data = (void *) actor_id_self()
     };
-    send_message(data, get_son);
+    send_message((actor_id_t) data, get_son);
 }
 
 void calculate(void **stateptr, size_t size, void *data) {

@@ -12,9 +12,6 @@ add_test(simple simple)
 add_executable(test_deadlock test_deadlock.c)
 add_test(test_deadlock test_deadlock)
 
-add_executable(test_queue queue.c)
-add_test(test_queue test_queue)
-
 add_executable(test_signal test-signal.c)
 add_test(test_signal test_signal)
 

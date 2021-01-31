@@ -22,6 +22,4 @@ void queue_destruct(queue_t *q);
 
 size_t queue_size(queue_t *q);
 
-void print_queue(queue_t *q);
-
 #endif //QUEUE_H

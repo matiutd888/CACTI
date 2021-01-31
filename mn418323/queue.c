@@ -40,12 +40,6 @@ int queue_empty(queue_t *q) {
     return q->count == 0;
 }
 
-//void swap(void **a, void **b) {
-//    void *tmp = *a;
-//    *a = *b;
-//    *b = tmp;
-//}
-
 void reverse(queue_t *q, size_t l, size_t r) {
     size_t mid = (l + r) / 2;
     for (size_t i = l; i <= mid; i++) {
@@ -118,15 +112,4 @@ void queue_destruct(queue_t *q) {
 
 size_t queue_size(queue_t *q) {
     return q->count;
-}
-
-void print_queue(queue_t *q) {
-    printf("COUNT: %d, READ: %d, WRITE: %d, SIZE: %d\n", q->count,
-           q->read,
-           q->write,
-           q->size);
-    for (int i = 0; i < q->count; ++i) {
-        printf("%ld -> ", q->arr[(q->read + i) % (q->size)]);
-    }
-    printf("\n");
 }
