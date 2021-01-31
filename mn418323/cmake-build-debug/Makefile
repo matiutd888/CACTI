@@ -304,6 +304,19 @@ test_queue/fast:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/build
 .PHONY : test_queue/fast
 
+#=============================================================================
+# Target rules for targets named test_signal
+
+# Build rule for target.
+test_signal: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_signal
+.PHONY : test_signal
+
+# fast build rule for target.
+test_signal/fast:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_signal.dir/build.make test/CMakeFiles/test_signal.dir/build
+.PHONY : test_signal/fast
+
 cacti.o: cacti.c.o
 
 .PHONY : cacti.o
@@ -461,6 +474,7 @@ help:
 	@echo "... test_empty"
 	@echo "... test_janek"
 	@echo "... test_queue"
+	@echo "... test_signal"
 	@echo "... cacti.o"
 	@echo "... cacti.i"
 	@echo "... cacti.s"

@@ -103,6 +103,7 @@ test/all: test/CMakeFiles/test_janek.dir/all
 test/all: test/CMakeFiles/test_deadlock.dir/all
 test/all: test/CMakeFiles/test_empty.dir/all
 test/all: test/CMakeFiles/test_queue.dir/all
+test/all: test/CMakeFiles/test_signal.dir/all
 
 .PHONY : test/all
 
@@ -118,6 +119,7 @@ test/clean: test/CMakeFiles/test_janek.dir/clean
 test/clean: test/CMakeFiles/test_deadlock.dir/clean
 test/clean: test/CMakeFiles/test_empty.dir/clean
 test/clean: test/CMakeFiles/test_queue.dir/clean
+test/clean: test/CMakeFiles/test_signal.dir/clean
 
 .PHONY : test/clean
 
@@ -363,6 +365,33 @@ test_queue: test/CMakeFiles/test_queue.dir/rule
 test/CMakeFiles/test_queue.dir/clean:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/clean
 .PHONY : test/CMakeFiles/test_queue.dir/clean
+
+#=============================================================================
+# Target rules for target test/CMakeFiles/test_signal.dir
+
+# All Build rule for target.
+test/CMakeFiles/test_signal.dir/all: CMakeFiles/cacti.dir/all
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_signal.dir/build.make test/CMakeFiles/test_signal.dir/depend
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_signal.dir/build.make test/CMakeFiles/test_signal.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles --progress-num=21,22 "Built target test_signal"
+.PHONY : test/CMakeFiles/test_signal.dir/all
+
+# Build rule for subdir invocation for target.
+test/CMakeFiles/test_signal.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles 6
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_signal.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug/CMakeFiles 0
+.PHONY : test/CMakeFiles/test_signal.dir/rule
+
+# Convenience name for target.
+test_signal: test/CMakeFiles/test_signal.dir/rule
+
+.PHONY : test_signal
+
+# clean rule for target.
+test/CMakeFiles/test_signal.dir/clean:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_signal.dir/build.make test/CMakeFiles/test_signal.dir/clean
+.PHONY : test/CMakeFiles/test_signal.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

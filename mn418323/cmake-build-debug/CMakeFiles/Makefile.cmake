@@ -59,4 +59,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "test/CMakeFiles/test_deadlock.dir/DependInfo.cmake"
   "test/CMakeFiles/test_empty.dir/DependInfo.cmake"
   "test/CMakeFiles/test_queue.dir/DependInfo.cmake"
+  "test/CMakeFiles/test_signal.dir/DependInfo.cmake"
   )

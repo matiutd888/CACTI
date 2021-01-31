@@ -277,6 +277,21 @@ test_queue/fast:
 	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_queue.dir/build.make test/CMakeFiles/test_queue.dir/build
 .PHONY : test_queue/fast
 
+# Convenience name for target.
+test/CMakeFiles/test_signal.dir/rule:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_signal.dir/rule
+.PHONY : test/CMakeFiles/test_signal.dir/rule
+
+# Convenience name for target.
+test_signal: test/CMakeFiles/test_signal.dir/rule
+
+.PHONY : test_signal
+
+# fast build rule for target.
+test_signal/fast:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_signal.dir/build.make test/CMakeFiles/test_signal.dir/build
+.PHONY : test_signal/fast
+
 actor_system_test.o: actor_system_test.c.o
 
 .PHONY : actor_system_test.o
@@ -385,6 +400,33 @@ simple_test.c.s:
 	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/simple.dir/build.make test/CMakeFiles/simple.dir/simple_test.c.s
 .PHONY : simple_test.c.s
 
+test-signal.o: test-signal.c.o
+
+.PHONY : test-signal.o
+
+# target to build an object file
+test-signal.c.o:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_signal.dir/build.make test/CMakeFiles/test_signal.dir/test-signal.c.o
+.PHONY : test-signal.c.o
+
+test-signal.i: test-signal.c.i
+
+.PHONY : test-signal.i
+
+# target to preprocess a source file
+test-signal.c.i:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_signal.dir/build.make test/CMakeFiles/test_signal.dir/test-signal.c.i
+.PHONY : test-signal.c.i
+
+test-signal.s: test-signal.c.s
+
+.PHONY : test-signal.s
+
+# target to generate assembly for a file
+test-signal.c.s:
+	cd /home/mateusz/PW/projekt-C/mn418323/cmake-build-debug && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_signal.dir/build.make test/CMakeFiles/test_signal.dir/test-signal.c.s
+.PHONY : test-signal.c.s
+
 test_deadlock.o: test_deadlock.c.o
 
 .PHONY : test_deadlock.o
@@ -458,6 +500,7 @@ help:
 	@echo "... test_empty"
 	@echo "... test_janek"
 	@echo "... test_queue"
+	@echo "... test_signal"
 	@echo "... actor_system_test.o"
 	@echo "... actor_system_test.i"
 	@echo "... actor_system_test.s"
@@ -470,6 +513,9 @@ help:
 	@echo "... simple_test.o"
 	@echo "... simple_test.i"
 	@echo "... simple_test.s"
+	@echo "... test-signal.o"
+	@echo "... test-signal.i"
+	@echo "... test-signal.s"
 	@echo "... test_deadlock.o"
 	@echo "... test_deadlock.i"
 	@echo "... test_deadlock.s"

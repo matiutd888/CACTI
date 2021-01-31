@@ -15,6 +15,9 @@ add_test(test_deadlock test_deadlock)
 add_executable(test_queue queue.c)
 add_test(test_queue test_queue)
 
+add_executable(test_signal test-signal.c)
+add_test(test_signal test_signal)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -pthread")
 add_executable(chaos chaos.cpp)
