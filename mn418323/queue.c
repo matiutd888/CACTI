@@ -64,14 +64,11 @@ void cyclic(queue_t *q) {
     reverse(q, 0, q->write - 1);
     reverse(q, q->read, q->size - 1);
     reverse(q, 0, q->size - 1);
-    q->read = 0;
-    q->write = q->size;
 }
 
 static void resize(queue_t *q) {
     q->size = RESIZE_MULTIPLIER * q->size + 1;
     q->arr = realloc(q->arr, ELEMENT_SIZE * q->size);
-
     if (q->arr == NULL)
         exit(EXIT_CODE_MALLOC_FAIL);
 
@@ -82,6 +79,8 @@ static void resize(queue_t *q) {
 
 static void enhance_queue(queue_t *q) {
     cyclic(q);
+    q->read = 0;
+    q->write = q->size;
     resize(q);
 }
 
@@ -126,8 +125,12 @@ size_t queue_size(queue_t *q) {
 }
 
 void print_queue(queue_t *q) {
+    printf("COUNT: %d, READ: %d, WRITE: %d, SIZE: %d\n", q->count,
+           q->read,
+           q->write,
+           q->size);
     for (int i = 0; i < q->count; ++i) {
-        printf("%d -> ", *(int *) q->arr[(q->read + i) % (q->size)]);
+        printf("%ld -> ", *(long *) q->arr[(q->read + i) % (q->size)]);
     }
     printf("\n");
 }

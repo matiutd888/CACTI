@@ -76,6 +76,7 @@ void hello_origin(void **stateptr, size_t size, void *data) {
 void get_son_id(void **stateptr, size_t size, void *data) {
     UNUSED(size);
     actor *act = *stateptr;
+    // printf("Hello i am %ldth, my son is %ldth\n", act->col, act->next);
     act->next = (actor_id_t) data;
     message_t spawn_son = {
             .message_type = MSG_SAVE_COLUMN_AND_SPAWN,
@@ -135,7 +136,7 @@ void calculate(void **stateptr, size_t size, void *data) {
     row_t *r = data;
     actor *act = *stateptr;
     r->sum += act->macierz[r->row][act->col];
-
+    // printf("CALCULATE jestem %ld liczę wiersz %d który ma sumę %ld\n", act->col, r->row, r->sum);
     usleep(act->milisec[r->row][act->col]);
     if (act->col + 1 < act->n) {
         message_t calculate = {
@@ -201,7 +202,7 @@ int main() {
         }
     }
 
-    printf("Dupa\n");
+    // printf("Dupa\n");
 
     actor_id_t origin;
     actor_system_create(&origin, &role_father);
