@@ -144,7 +144,6 @@ static void destroy_system() {
 
     clean_actors();
 
-    print_queue(tpool->q);
     queue_destruct(tpool->q);
     free(tpool);
     tpool = NULL;
