@@ -103,20 +103,16 @@ void *queue_pop(queue_t *q) {
     return r;
 }
 
-void free_array(void **arr, size_t length) {
-    if (arr == NULL)
-        return;
-    for (size_t i = 0; i < length; i++) {
-        if (arr[i] != NULL)
-            free(arr[i]);
-    }
-    free(arr);
-}
 
 void queue_destruct(queue_t *q) {
     if (q == NULL)
         return;
-    free_array(q->arr, q->size);
+    if (q->arr != NULL) {
+        for (size_t i = 0; i < q->count; i++)
+            if (q->arr[(q->read + i) % (q->size)] != NULL)
+                free(q->arr[(q->read + i) % (q->size)]);
+        free(q->arr);
+    }
     free(q);
 }
 
@@ -130,7 +126,7 @@ void print_queue(queue_t *q) {
            q->write,
            q->size);
     for (int i = 0; i < q->count; ++i) {
-        printf("%ld -> ", *(long *) q->arr[(q->read + i) % (q->size)]);
+        printf("%ld -> ", q->arr[(q->read + i) % (q->size)]);
     }
     printf("\n");
 }
