@@ -15,7 +15,7 @@
    endif()
  endmacro()
 
- add_library(cacti STATIC cacti.c cacti.h queue.h queue.c err.c err.h)
+ add_library(cacti STATIC cacti.c queue.c err.c)
  add_executable(macierz macierz.c)
  add_executable(silnia silnia.c)
 
