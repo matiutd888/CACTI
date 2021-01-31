@@ -75,9 +75,9 @@ int main() {
     actor_id_t id;
     actor_system_create(&id, &dummy_role);
 //  !!!Odkomentuj tę linijkę, jeśli nie wysyłasz HELLO do początkowego aktora!!!
-    send_message(id, (message_t) {
-            .message_type = MSG_HELLO
-    });
+//    send_message(id, (message_t) {
+//            .message_type = MSG_HELLO
+//    });
     sleep(1);
     for (int i = 0; i < 20; ++i) {
         send_message(id, (message_t) {

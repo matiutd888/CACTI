@@ -145,7 +145,7 @@ static void destroy_system() {
 
     clean_actors();
 
-    printf("QUEUE DESTRUCT: %d\n", queue_size(tpool->q));
+    // printf("QUEUE DESTRUCT: %d\n", queue_size(tpool->q));
     print_queue(tpool->q);
     queue_destruct(tpool->q);
     free(tpool);
@@ -319,7 +319,7 @@ static void run_spawn(actor_t *actor, message_t *msg) {
     message.data = (void *) actor->id;
     message.message_type = MSG_HELLO;
     message.nbytes = sizeof(actor_id_t);
-    printf("Stworzyłęm aktora %d, wysyłam do niego hello\n", new_act->id);
+    // printf("Stworzyłęm aktora %d, wysyłam do niego hello\n", new_act->id);
     send_message(new_act->id, message);
 }
 
@@ -333,7 +333,7 @@ static void run_message(actor_t *actor, message_t *msg) {
         lock_mutex(&(actor->mutex));
         actor->is_dead = true;
         actors.count_dead++;
-        printf("%d: KOŃCZĘ ŻYWOT %d, COUNT DEAD: %d\n", pthread_self() % 100, actor->id, actors.count_dead);
+        // printf("%d: KOŃCZĘ ŻYWOT %d, COUNT DEAD: %d\n", pthread_self() % 100, actor->id, actors.count_dead);
 
         unlock_mutex(&(actor->mutex));
         unlock_mutex(&mutex);
@@ -390,12 +390,13 @@ static void *tpool_worker() {
     while (1) {
         lock_mutex(&(mutex));
 
-        printf("%lu: Actors count =%zu, Actors dead =%zu, tm.queue.size() %zu\n",
-               pthread_self() % 100, actors.count, actors.count_dead, queue_size(tpool->q));
+//        printf("%lu: Actors count =%zu, Actors dead =%zu, tm.queue.size() %zu\n",
+//               pthread_self() % 100, actors.count, actors.count_dead, queue_size(tpool->q));
 
         while (queue_empty(tpool->q) && !tpool->stop) {
             if (queue_empty(tpool->q) && (actors.count_dead == actors.count || actors.signaled)) {
-                printf("%lu: Zauważyłem, że to koniec!\n", pthread_self() % 100);
+                //printf("%lu: Zauważyłem, że to koniec!\n", pthread_self() % 100);
+                //printf("COUNT: %d COUNT DEAD: %d SIGNALED: %d\n", actors.count, actors.count_dead,actors.signaled);
                 tpool->stop = true;
                 tpool->thread_cnt--;
                 tpool_destroy();
@@ -534,7 +535,7 @@ static void tpool_destroy() {
     } else {
         cond_broadcast(&(join_cond));
     }
-    printf("Skończyłęm się!\n");
+     printf("Skończyłęm się!\n");
     pthread_exit(NULL);
 }
 
