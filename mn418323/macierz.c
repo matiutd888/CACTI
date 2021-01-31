@@ -219,6 +219,8 @@ int main() {
     };
 
     send_message(origin, msg);
+
+    sleep(4);
     actor_system_join(origin);
     for (int i = 0; i < k; ++i) {
         free(macierz[i]);
