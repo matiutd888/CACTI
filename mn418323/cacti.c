@@ -96,7 +96,6 @@ static actor_vec_t actors = {
 static pthread_mutex_t mutex;
 
 
-
 sigset_t block_mask; // TODO oddać maskę
 struct sigaction action, old_action;
 
@@ -290,7 +289,8 @@ int actor_system_create(actor_id_t *actor, role_t *const role) {
             .nbytes = 0,
             .data = NULL
     };
-    send_message(act->actor_id, hello);
+    printf("Stworzym system, wysyłam hello!\n");
+    send_message(*(act->actor_id), hello);
     return 0;
 }
 
@@ -382,9 +382,9 @@ static void *tpool_worker() {
     actor_id_t *id = NULL;
     while (1) {
         lock_mutex(&(mutex));
-        if (debug)
-            printf("%lu: Actors count =%zu, Actors dead =%zu, tm.queue.size() %zu\n",
-                   pthread_self() % 100, actors.count, actors.count_dead, queue_size(tpool->q));
+
+        printf("%lu: Actors count =%zu, Actors dead =%zu, tm.queue.size() %zu\n",
+               pthread_self() % 100, actors.count, actors.count_dead, queue_size(tpool->q));
 
         while (queue_empty(tpool->q) && !tpool->stop) {
             if (queue_empty(tpool->q) && (actors.count_dead == actors.count || actors.signaled)) {
