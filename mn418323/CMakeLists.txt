@@ -1,4 +1,4 @@
- cmake_minimum_required (VERSION 3.13)
+ cmake_minimum_required (VERSION 3.1)
  project (CACTI)
 
  enable_testing()
@@ -22,5 +22,3 @@
  add_subdirectory(test)
 
  install(TARGETS cacti DESTINATION .)
-
- set_property(TARGET cacti PROPERTY C_STANDARD 11)
