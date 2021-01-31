@@ -383,8 +383,9 @@ static void *tpool_worker() {
     while (1) {
         lock_mutex(&(mutex));
 
-        printf("%lu: Actors count =%zu, Actors dead =%zu, tm.queue.size() %zu\n",
-               pthread_self() % 100, actors.count, actors.count_dead, queue_size(tpool->q));
+        if (debug)
+            printf("%lu: Actors count =%zu, Actors dead =%zu, tm.queue.size() %zu\n",
+                   pthread_self() % 100, actors.count, actors.count_dead, queue_size(tpool->q));
 
         while (queue_empty(tpool->q) && !tpool->stop) {
             if (queue_empty(tpool->q) && (actors.count_dead == actors.count || actors.signaled)) {
