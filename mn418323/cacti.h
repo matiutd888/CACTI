@@ -15,14 +15,14 @@ typedef long message_type_t;
 
 #ifndef CAST_LIMIT
 #define CAST_LIMIT 1048576
+
 #endif
-// 1048576
 #ifndef POOL_SIZE
-#define POOL_SIZE 7
+#define POOL_SIZE 3
 #endif
 
-typedef struct message
-{   message_type_t message_type;
+typedef struct message {
+    message_type_t message_type;
     size_t nbytes;
     void *data;
 } message_t;
