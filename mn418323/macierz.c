@@ -137,7 +137,7 @@ void calculate(void **stateptr, size_t size, void *data) {
     actor *act = *stateptr;
     r->sum += act->macierz[r->row][act->col];
     // printf("CALCULATE jestem %ld liczę wiersz %d który ma sumę %ld\n", act->col, r->row, r->sum);
-    usleep(act->milisec[r->row][act->col]);
+    usleep(act->milisec[r->row][act->col] * 1000);
     if (act->col + 1 < act->n) {
         message_t calculate = {
                 .data = r,
@@ -220,7 +220,6 @@ int main() {
 
     send_message(origin, msg);
 
-    sleep(4);
     actor_system_join(origin);
     for (int i = 0; i < k; ++i) {
         free(macierz[i]);

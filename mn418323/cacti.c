@@ -119,9 +119,10 @@ static pthread_cond_t join_cond;
 
 
 void catch(int sig) {
-    actors.signaled = true;
-    printf("Otrzymano signal!\n");
-    pthread_cond_broadcast(&(tpool->work_cond));
+    if (sig == SIGINT) {
+        actors.signaled = true;
+        pthread_cond_broadcast(&(tpool->work_cond));
+    }
 }
 
 // Helper methods
