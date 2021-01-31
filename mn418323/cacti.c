@@ -147,7 +147,7 @@ static void destroy_system() {
 
 static void t_pool_execute_messages(actor_id_t id);
 
-static void t_pool_destroy();
+static void t_pool_destruct();
 
 // Executes work in the treadpool thats pointed by arg.
 static void *t_pool_search_for_work();
@@ -358,7 +358,6 @@ static void t_pool_execute_messages(actor_id_t id) {
 static void *t_pool_search_for_work() {
     sigaction(SIGINT, &action, 0);
 
-    actor_id_t id = NO_ACTOR;
     while (!t_pool.stop) {
         lock_mutex(&(mutex));
 
@@ -366,7 +365,7 @@ static void *t_pool_search_for_work() {
             if (queue_empty(t_pool.q) && (actors.count_dead == actors.count || actors.signaled)) {
                 t_pool.stop = true;
                 t_pool.thread_count--;
-                t_pool_destroy();
+                t_pool_destruct();
                 return NULL;
             }
             cond_wait(&(t_pool.work_cond), &(mutex));
@@ -375,6 +374,7 @@ static void *t_pool_search_for_work() {
         if (t_pool.stop)
             break;
 
+        actor_id_t id;
         if (queue_empty(t_pool.q))
             id = NO_ACTOR;
         else
@@ -456,13 +456,14 @@ int send_message(actor_id_t id, message_t message) {
 
 // System destruction handling
 
-static void t_pool_destroy() {
+static void t_pool_destruct() {
     cond_broadcast(&(t_pool.work_cond));
 
     while (t_pool.thread_count != 0) {
         cond_wait(&(t_pool.wait_for_end), &(mutex));
     }
     unlock_mutex(&(mutex));
+
     actors.dead = true;
 
     if (!joined) {
@@ -470,7 +471,6 @@ static void t_pool_destroy() {
     } else {
         cond_broadcast(&(join_cond));
     }
-    pthread_exit(NULL);
 }
 
 static void join_threads() {
